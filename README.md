@@ -9,17 +9,16 @@ Et ce n'est pas tout : vous allez devoir orchestrer toutes ces informations de m
 
 Etape 1 : la carte des restaurants
 
-Commencez par les fondations de votre application. Il y aura 2 sections principales : == 80%
+Commencez par les fondations de votre application. Il y aura 2 sections principales : == 100%
+Une carte Google Maps, chargée avec l'API de Google Maps == 100%
 
-Une carte Google Maps, chargée avec l'API de Google Maps == 50%
-
-Une liste de restaurants correspondant à la zone affichée sur la carte Google Maps == 50%
+Une liste de restaurants correspondant à la zone affichée sur la carte Google Maps == 100%
 
 Vous placerez ces éléments côte à côte. 100%
 
 La carte Google Maps sera centrée immédiatement sur la position de l'utilisateur. 100%
-Vous utiliserez l'API de géolocalisation de JavaScript. ? vérification a faire
-Un marqueur de couleur spécifique sera placé à l'emplacement de l'utlisateur. 0%
+Vous utiliserez l'API de géolocalisation de JavaScript. 100%
+Un marqueur de couleur spécifique sera placé à l'emplacement de l'utlisateur. 100% 
 
 Une liste de restaurants est fournie sous forme de données JSON présentées dans un fichier à part. 100%
 En temps normal, ces données vous seraient renvoyés par un backend via une API,
@@ -28,9 +27,12 @@ mais pour cet exercice il sera pour le moment suffisant de charger en mémoire t
 
 Affichez ces restaurants grâce à leurs coordonnées GPS sur la carte. 0%
 Les restaurants qui sont actuellement visibles sur la carte doivent être affichés sous forme de liste sur le côté de la carte. 0%
-Vous afficherez la moyenne des commentaires de chaque restaurant (qui va de 1 à 5 étoiles). 0%
+Vous afficherez la moyenne des commentaires de chaque restaurant (qui va de 1 à 5 étoiles). 100%
 
 Lorsqu'on clique sur un restaurant, la liste des avis enregistrés s'affiche avec les commentaires. Affichez aussi la photo Google Street View grâce à l'API correspondante.
+
+
+
 
 Un outil de filtre permet d'afficher uniquement les restaurants ayant entre X et Y étoiles. La mise à jour de la carte s'effectue en temps réel.
 
