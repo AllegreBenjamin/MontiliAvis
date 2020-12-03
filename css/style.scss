@@ -1,13 +1,36 @@
 /* CSS Document */
+body {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+}
+
+header {
+	height: 200px;
+	background-color: darkblue;
+}
+#search h4, #search label{
+	color: white;
+}
+
+#list img {
+	width: 40%;
+}
 
 .H5 {
 	color: blue;
 }
 
-.listElementNone{
+.listElementNone, .article-img{
 	display: none;
 }
-.listElement{
-	display: block;
+
+.article li {
 	list-style: none;
 }
+
+#map{ 
+	height:400px;
+	width: 100%;
+}
+
