@@ -25,16 +25,16 @@ En temps normal, ces données vous seraient renvoyés par un backend via une API
 mais pour cet exercice il sera pour le moment suffisant de charger en mémoire tous les restaurants en mémoire directement.
 
 
-Affichez ces restaurants grâce à leurs coordonnées GPS sur la carte. 0%
-Les restaurants qui sont actuellement visibles sur la carte doivent être affichés sous forme de liste sur le côté de la carte. 0%
+Affichez ces restaurants grâce à leurs coordonnées GPS sur la carte. 100%
+Les restaurants qui sont actuellement visibles sur la carte doivent être affichés sous forme de liste sur le côté de la carte. 100%
 Vous afficherez la moyenne des commentaires de chaque restaurant (qui va de 1 à 5 étoiles). 100%
 
-Lorsqu'on clique sur un restaurant, la liste des avis enregistrés s'affiche avec les commentaires. Affichez aussi la photo Google Street View grâce à l'API correspondante.
+Lorsqu'on clique sur un restaurant, la liste des avis enregistrés s'affiche avec les commentaires. Affichez aussi la photo Google Street View grâce à l'API correspondante.100%
 
 
 
 
-Un outil de filtre permet d'afficher uniquement les restaurants ayant entre X et Y étoiles. La mise à jour de la carte s'effectue en temps réel.
+Un outil de filtre permet d'afficher uniquement les restaurants ayant entre X et Y étoiles. La mise à jour de la carte s'effectue en temps réel. 100%
 
 Fichiers à fournir :
 
