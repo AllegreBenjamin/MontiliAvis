@@ -4,10 +4,7 @@
 	<meta charset="utf-8">
 
 		<style type="text/css">
-			#map{ /* la carte DOIT avoir une hauteur sinon elle n'apparaît pas */
-				height:400px;
-				width: 100%;
-			}
+			
 		</style>
 	<link href="css/style.css" rel="stylesheet" type="text/css"/>
 	<link href="css/bootstrap/bootstrap.css" rel="stylesheet" />
@@ -23,8 +20,19 @@
 		<div class="col-lg-2">
 			
 		</div>
-		<div class="col-lg-6">
+		<div id="search" class="col-lg-6">
+			<div class="row">
+				<div  class="col-lg-12">
+					<h4>Recherche par filtres</h4>
+				</div>
+			</div>
 			
+			<form class="row">
+				
+				<input id="starMin" class="col-lg-3" type="number" placeholder="Entrez une valeur ici" min="0" max="5"/>
+				
+				<button type="button" id="search">Filtre moyenne d'étoiles</button>
+			</form>
 		</div>
 	</header>
 	
@@ -40,26 +48,28 @@
 	</footer>
 	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/restaurants.js" type="text/javascript"></script>
-	<script src="https://maps.google.com/maps/api/js?key=Your_Key" type="text/javascript"></script>
-	<script type="text/javascript">
-		
-		// On initialise la latitude et la longitude de Montélimar (centre de la carte)
-		var markerMontelimar = null;
-		var map = null;
-		var yourPos = null;
-		var montelimar = {lat: 44.557939, lng: 4.750318};
-		
+	<script src="https://maps.google.com/maps/api/js?key=AIzaSyByrNSyEIF-ix_iIq-ogoJCGqSIzLX-qJY" type="text/javascript"></script>
+	<script attib type="text/javascript">
+	
+	
+	var map, infoWindow, markerRestaurant;
+	var starMin = 0;
+	var montelimar = {lat: 44.557939, lng: 4.750318};
+	const POS = {};
+
+
 	function initMap() {
+		
 		// Créer l'objet "map" et l'insèrer dans l'élément HTML qui a l'ID "map"
 		map = new google.maps.Map(document.getElementById("map"), {
 			// Nous plaçons le centre de la carte avec les coordonnées ci-dessus
-			center: new google.maps.LatLng(montelimar), 
+			center: new google.maps.LatLng(montelimar),
 			// Nous définissons le zoom par défaut
-			zoom: 11, 
+			zoom: 18, 
 			// Nous définissons le type de carte (ici carte routière)
 			mapTypeId: google.maps.MapTypeId.ROADMAP, 
 			// Nous activons les options de contrôle de la carte (plan, satellite...)
-			mapTypeControl: true,
+			mapTypeControl:  true,
 			// Nous désactivons la roulette de souris
 			scrollwheel: false, 
 			mapTypeControlOptions: {
@@ -71,59 +81,86 @@
 			navigationControlOptions: {
 				// Comment ces options doivent-elles s'afficher
 				style: google.maps.NavigationControlStyle.ZOOM_PAN 
-			}
-			
+			},
+			styles : [
+				{
+					"featureType": "all",
+                	"elementType": "labels.icon",
+                	"stylers": [
+						{
+							"visibility": "off"
+						}
+                	]
+				},
+			]
 		});
+
+		new google.maps.Marker({
+			position: montelimar,
+			map,
+			icon: 'img/icons/panneau-ville-montelimar.png'
+		});
+
+		infoWindow = new google.maps.InfoWindow();
+  		
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					POS.lat = position.coords.latitude,
+					POS.lng = position.coords.longitude;
+					
+					let markerYourPos = new google.maps.Marker({
+						position: POS,
+						map: map,
+						icon: 'img/icons/vous-etes-ici.png'
+					});
+
+					map.setCenter(POS);
+				}
+			);
+		} else {
+			// Browser doesn't support Geolocation
+			handleLocationError(false, infoWindow, map.getCenter());
+		}
+		  
 		
-		infoWindow = new google.maps.InfoWindow;
+	}
 
-        // Try HTML5 geolocation.
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            yourPos = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
+	function addMarkerAll(lat, lng){
 
-            infoWindow.setPosition(yourPos);
-            infoWindow.setContent('Vous etes ici.');
-            infoWindow.open(map);
-            map.setCenter(yourPos);
-			 
-          }, function() {
-            handleLocationError(true, infoWindow, map.getCenter());
-          });
-        } else {
-          // Browser doesn't support Geolocation
-          handleLocationError(false, infoWindow, map.getCenter());
-        }
-      }
+	}
 
-      function handleLocationError(browserHasGeolocation, infoWindow, yourPos) {
-        infoWindow.setPosition(yourPos);
-        infoWindow.setContent(browserHasGeolocation ?
-                              'Error: The Geolocation service failed.' :
-                              'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
-      }
-	  var markerMontelimar = new google.maps.Marker({position: montelimar, map: map});
-	  var markerYourPos = new google.maps.Marker({position: yourPos, map: map});
-	  
-	function initRestaurantsJSON(callback) {
+	function addMarker(lat, lng){
+		    markerRestaurant = new google.maps.Marker({
+			position: {lat, lng},
+			map,
+			icon: 'img/icons/restaurant.png'
+		});
+		map.setCenter({lat, lng});
+	}
+	
+	function deleteMarker(){
+		markerRestaurant.setMap(null);
+	}
+
+	function handleLocationError(browserHasGeolocation, infoWindow, POS) {
+  		infoWindow.setPosition(POS);
+  		infoWindow.setContent(
+			browserHasGeolocation
+				? "Error: The Geolocation service failed."
+				: "Error: Your browser doesn't support geolocation."
+  		);
+  		infoWindow.open(map);
+	}
+
+	function getRestaurantsJSON(callback) {
 	   var request = new XMLHttpRequest();
 		request.onreadystatechange = function() {
 			if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
 				var restaurantsResponses = JSON.parse(this.responseText);
-				for(var restaurants of restaurantsResponses){
-					
-					restaurant = new Restaurants(restaurants.idRestaurant, restaurants.name, restaurants.address, restaurants.description, restaurants.lat, restaurants.lng, restaurants.ratings);
-					
-					restaurant.displayRestaurants(restaurant);
+				
 				// appel callback car appel terminé
-				callback();
-				}
-				
-				
+				callback(restaurantsResponses);
 			}
 		};
 		request.open("GET", "json/restaurants.json");
@@ -131,34 +168,92 @@
 		
 	}
 
-		window.onload = function(){
-			// Fonction d'initialisation qui s'exécute lorsque le DOM est chargé
-			initMap();
-			initRestaurantsJSON(function() {
-				const nodeList = document.getElementsByClassName('article');
+
+	function initRestaurants() {
+		getRestaurantsJSON(function(restaurants) {
+		/**
+		 * 'getRestaurantsJSON' prends en paramètre un callback auquel
+		 * va être communiquée la réponse sous forme d'objet.
+		 */
+		restaurants.map(restaurant => new Restaurants(
+			restaurant.idRestaurant,
+			restaurant.name,
+			restaurant.address,
+			restaurant.description,
+			restaurant.lat,
+			restaurant.lng,
+			restaurant.ratings
+			));
+		
+        /**
+         * Tu modifies l'array 'restaurants' grâce à map de sorte à enregistrer
+         * tes nouvelles instances de 'Restaurants' (qui devrait être au singulier
+         * d'après moi.)
+         */
+    	const searchBtn = document.querySelector('#search');
+   		// Tu récupère le bouton de recherche.
+    	const starMin = document.querySelector('#starMin');
+    	// Tu récupère le champs de notation minimum.
+    	searchBtn.addEventListener('click', function handler(event) {
+        	// Tu enregistres ton événement UNE SEULE fois.
+        	Restaurants.clearList();
+			/**
+			 * Tu appels une méthode statique de ta class 'Restaurants' qui va
+			 * nettoyer la recherche précédente.
+			 */
+			console.log(restaurants);
+			Restaurants.displayRestaurants(restaurants, starMin.value || 0);
+			/**
+			 * Tu appels une méthode statique de ta class 'Restaurants' qui va
+			 * afficher les restaurants contenu dans l'array (d'instance de
+			 * 'Restaurants') 'restaurants' ayant une note suppérieur ou égale à
+			 * 'starMin.value || 0' (comprendre 'starMin.value' ou '0' si
+			 * 'starMin.value' n'a pas de valeur.)
+			 */
+        	return handler;
+    }());
+
+			const nodeList = document.getElementsByClassName('article');
+			
+			for (let x = 0; x < nodeList.length; x++) {
+				nodeList[x].addEventListener('click', function(event) {
+					
+					let latitude = document.getElementById('lat-'+x).innerHTML;
+					let longitude = document.getElementById('lng-'+x).innerHTML;
+					
+					addMarker(parseFloat(latitude), parseFloat(longitude));
+					let img = document.getElementById('img-'+x);
+					img.classList.remove('article-img');
+					let ul = document.getElementById('ul-'+x);
+					let les_li = ul.querySelectorAll('li');
+					for(let y = 0; les_li.length > y ; y++) {
+						let li = les_li[y];
+						li.classList.remove('listElementNone');
+					} 
+					
+				})
+				const commentList = document.getElementById('ul-'+x);
 				
-				for (let x = 0; x < nodeList.length; x++) {
-					nodeList[x].addEventListener('click', function(event) {
-						console.log('click sur article : ' + x);
-						let ul = document.getElementById('ul-'+x);
-						let les_li = ul.querySelectorAll('li');
-						for(let y = 0; les_li.length > y ; y++) {
-							let li = les_li[y];
-							li.classList.remove('listElementNone');
-						} 
-					})
-					nodeList[x].addEventListener('mouseout', function(event){
-						let ul = document.getElementById('ul-'+x);
-						let les_li = ul.querySelectorAll('li');
-						for(let y = 0; les_li.length > y ; y++) {
-							let li = les_li[y];
-							li.classList.add('listElementNone');
-						} 
-					})
-				}
-			});
-				
-		};
+				commentList.addEventListener('mouseout', function(event){
+					
+					deleteMarker();
+					let img = document.getElementById('img-'+x);
+					img.classList.add('article-img');
+					let les_li = commentList.querySelectorAll('li');
+					for(let y = 0; les_li.length > y ; y++) {
+						let li = les_li[y];
+						li.classList.add('listElementNone');
+					}
+				})
+			}
+		});
+	}
+
+	window.onload = function(){
+		// Fonction d'initialisation qui s'exécute lorsque le DOM est chargé
+		initMap();
+		initRestaurants();
+	};
 	</script>
 </body>
 </html>
