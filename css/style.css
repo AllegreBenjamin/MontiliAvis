@@ -11,14 +11,20 @@ header {
 #search h4, #search label {
   color: white; }
 
-#list img {
+.img-star {
   width: 40%; }
 
 .H5 {
   color: blue; }
 
-.listElementNone, .article-img {
+.listElementNone, .article-img, .formElementNone {
   display: none; }
+
+.form-avis img {
+  width: 30px;
+  height: 30px;
+  margin: 0 -3px 0 0;
+  background-color: darkgray; }
 
 .article li {
   list-style: none; }

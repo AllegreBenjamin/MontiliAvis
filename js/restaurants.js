@@ -1,14 +1,5 @@
 class Restaurants {
-	/**
-	 * 
-	 * @param {*} idRestaurant 
-	 * @param {*} name 
-	 * @param {*} address 
-	 * @param {*} description 
-	 * @param {*} lat 
-	 * @param {*} lng 
-	 * @param {*} ratings 
-	 */
+
 	constructor(idRestaurant, name, address, description, lat, lng, ratings){
 		this.idRestaurant = idRestaurant;
 		this.name = name;
@@ -16,29 +7,22 @@ class Restaurants {
 		this.description = description;
 		this.lat = lat;
 		this.lng = lng;
-		this.ratings = ratings
+		this.ratings = ratings;
 	}
-	
+	/**
+	 * @listElement - renvoi l'élément du DOM qui correspond à ta liste de restaurant et qui servira dans les autres méthodes de cette class. 
+	 * @static
+	 */
 	static get listElement(){
-		/**
-		 *  renvoi l'élément du DOM
-		 * qui correspond à ta liste de restaurant et qui servira dans les autres méthodes
-		 * de cette class. 
-		 **/
 		return document.getElementById("list");
 	}
-	
-	static clearListRestaurants() {
-		 /**
-         * Ici, une méthode 'static' c'est ok, puisqu'elle "affecte" entre guillemet
-         * toutes les instances de ta class quand tu vide ton affichage de tout
-         * restaurant.
-         * Je suggère aussi de simplifier le nom en 'clearList' étant donnée que, te
-         * trouvant déjà dans la class 'Restaurants', on comprend tout de suite que tu
-         * parle de la liste de restaurant. (Bien sûr c'est du détail.)
-         */
+	/**
+	 * @clearList - vide l'affichage de tout restaurant.
+	 * @static
+	 */
+	static clearList() {
+		// On profite de la propriété static listElement qu'on vient de créer.
         Restaurants.listElement.innerHTML = null;
-        // On profite de la propriété static listElement qu'on vient de créer.
 	}
 
 	/**
@@ -50,6 +34,7 @@ class Restaurants {
 		
 		 // 'restaurants' est un array de restaurant et pas une seule instance.
 		Restaurants.clearList();
+		
 		 // On efface la liste.
 		 let html = '';
 
@@ -73,7 +58,21 @@ class Restaurants {
 						Lat : <span id="lat-${restaurant.idRestaurant}">${restaurant.lat}</span>
 						Lng : <span id="lng-${restaurant.idRestaurant}">${restaurant.lng}</span>
 					</p>
-					<ul id="ul-${restaurant.idRestaurant}">`;
+					<form id="formAvis-${restaurant.idRestaurant}" class="formElementNone form-avis">
+						<h5>Donner votre avis</h5>
+						<textarea id="comment" name="comment" rows="5" cols="33">
+
+						</textarea><br />
+						<input type="hidden" name="note" value="" id="note"/>
+  						<img src="img/stars/star_out.gif" id="star_1" class="star"/>
+  						<img src="img/stars/star_out.gif" id="star_2" class="star"/>
+  						<img src="img/stars/star_out.gif" id="star_3" class="star"/>
+  						<img src="img/stars/star_out.gif" id="star_4" class="star"/>
+						<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
+						<button type="button" id="avis">Envoyer</button>  
+					</form>
+					<ul id="ul-${restaurant.idRestaurant}">
+					`
 				restaurant.ratings.forEach(rating =>
 					/**
 					 * Pour chaque note du restaurant actuel, on procède
@@ -90,7 +89,7 @@ class Restaurants {
 			}	
 		});	
 	}
-
+	
 	static clearList(){
 		 /**
          * Ici, une méthode 'static' c'est ok, puisqu'elle "affecte" entre guillemet
@@ -122,7 +121,7 @@ class Restaurants {
          * mais renvoie simplement une string HTML. Un nom plus adapter serait 'starsHTML' par exemple.
          */
         const roundedStars = Math.round(stars * 2) / 2;
-        return `<img src="img/stars/${roundedStars}-stars-gold.png" alt="${roundedStars}-stars-gold.png" />`;
+        return `<img class="img-star" src="img/stars/${roundedStars}-stars-gold.png" alt="${roundedStars}-stars-gold.png" />`;
         /**
          * Par besoin d'une séquence logique à ralonge de 'if' / 'else if'.
          * Ici, il suffit de multiplier la note de l'instance courante par 2,

@@ -31,16 +31,20 @@
 				
 				<input id="starMin" class="col-lg-3" type="number" placeholder="Entrez une valeur ici" min="0" max="5"/>
 				
-				<button type="button" id="search">Filtre moyenne d'étoiles</button>
+				<button type="button" class="search">Filtre moyenne d'étoiles</button>
 			</form>
 		</div>
 	</header>
 	
 	<main class="row">
-		<div class="col-lg-6" id="map"></div>
+		<div class="col-lg-6" id="map">
+
+		</div>
+		
 		<div class="col-lg-6" id="list">
 			<h3>Liste restaurant</h3>
 		</div>
+	
 	</main>
 	
 	<footer class="row">
@@ -52,7 +56,7 @@
 	<script attib type="text/javascript">
 	
 	
-	var map, infoWindow, markerRestaurant;
+	var map, infoWindow, allMarkerRestaurant, markerRestaurant;
 	var starMin = 0;
 	var montelimar = {lat: 44.557939, lng: 4.750318};
 	const POS = {};
@@ -65,7 +69,7 @@
 			// Nous plaçons le centre de la carte avec les coordonnées ci-dessus
 			center: new google.maps.LatLng(montelimar),
 			// Nous définissons le zoom par défaut
-			zoom: 18, 
+			zoom: 17, 
 			// Nous définissons le type de carte (ici carte routière)
 			mapTypeId: google.maps.MapTypeId.ROADMAP, 
 			// Nous activons les options de contrôle de la carte (plan, satellite...)
@@ -127,14 +131,18 @@
 	}
 
 	function addMarkerAll(lat, lng){
-
-	}
-
-	function addMarker(lat, lng){
-		    markerRestaurant = new google.maps.Marker({
+		new google.maps.Marker({
 			position: {lat, lng},
 			map,
 			icon: 'img/icons/restaurant.png'
+		});
+	}
+
+	function addMarkerZoom(lat, lng){
+		    markerRestaurant = new google.maps.Marker({
+			position: {lat, lng},
+			map,
+			icon: 'img/icons/restaurant-zoom.png'
 		});
 		map.setCenter({lat, lng});
 	}
@@ -168,6 +176,7 @@
 		
 	}
 
+	
 
 	function initRestaurants() {
 		getRestaurantsJSON(function(restaurants) {
@@ -182,7 +191,7 @@
 			restaurant.description,
 			restaurant.lat,
 			restaurant.lng,
-			restaurant.ratings
+			restaurant.ratings,
 			));
 		
         /**
@@ -196,12 +205,11 @@
     	// Tu récupère le champs de notation minimum.
     	searchBtn.addEventListener('click', function handler(event) {
         	// Tu enregistres ton événement UNE SEULE fois.
-        	Restaurants.clearList();
+			Restaurants.clearList();
 			/**
 			 * Tu appels une méthode statique de ta class 'Restaurants' qui va
 			 * nettoyer la recherche précédente.
 			 */
-			console.log(restaurants);
 			Restaurants.displayRestaurants(restaurants, starMin.value || 0);
 			/**
 			 * Tu appels une méthode statique de ta class 'Restaurants' qui va
@@ -209,44 +217,69 @@
 			 * 'Restaurants') 'restaurants' ayant une note suppérieur ou égale à
 			 * 'starMin.value || 0' (comprendre 'starMin.value' ou '0' si
 			 * 'starMin.value' n'a pas de valeur.)
-			 */
-        	return handler;
-    }());
-
+			 */			
 			const nodeList = document.getElementsByClassName('article');
 			
 			for (let x = 0; x < nodeList.length; x++) {
+				if(Restaurants.starAverage(restaurants[x].ratings) >= starMin.value){
+					var latitude = document.getElementById('lat-'+x).innerHTML;
+					var longitude = document.getElementById('lng-'+x).innerHTML;	
+					addMarkerAll(parseFloat(latitude), parseFloat(longitude));
+				}
+			
 				nodeList[x].addEventListener('click', function(event) {
 					
-					let latitude = document.getElementById('lat-'+x).innerHTML;
-					let longitude = document.getElementById('lng-'+x).innerHTML;
-					
-					addMarker(parseFloat(latitude), parseFloat(longitude));
+					addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
 					let img = document.getElementById('img-'+x);
 					img.classList.remove('article-img');
+					let form = document.getElementById('formAvis-'+x);
+					form.classList.remove('formElementNone');
+					let les_stars = form.querySelectorAll('img');
+					let note = 0;
+					for(let w = 0; les_stars.length > w; w++) {
+						console.log(les_stars[w]);
+						les_stars[w].addEventListener('mouseover', function(event) {
+							les_stars[w].setAttribute("src", "img/stars/star_in.gif");
+							note++;
+							console.log(note);
+						});
+						les_stars[w].addEventListener('click', function(event) {
+							les_stars[w].setAttribute("src", "img/stars/star_out.gif");
+							note--;
+							console.log(note);
+						});
+					}
 					let ul = document.getElementById('ul-'+x);
 					let les_li = ul.querySelectorAll('li');
 					for(let y = 0; les_li.length > y ; y++) {
 						let li = les_li[y];
 						li.classList.remove('listElementNone');
+						
 					} 
 					
-				})
+				});
 				const commentList = document.getElementById('ul-'+x);
 				
-				commentList.addEventListener('mouseout', function(event){
+				commentList.addEventListener('mouseleave', function(event){
 					
-					deleteMarker();
+					addMarkerAll(parseFloat(latitude), parseFloat(longitude));
 					let img = document.getElementById('img-'+x);
 					img.classList.add('article-img');
+					let form = document.getElementById('formAvis-'+x);
+					form.classList.add('formElementNone');
 					let les_li = commentList.querySelectorAll('li');
 					for(let y = 0; les_li.length > y ; y++) {
 						let li = les_li[y];
 						li.classList.add('listElementNone');
 					}
-				})
+				});
 			}
+        	return handler;
+    	}());
+
+
 		});
+
 	}
 
 	window.onload = function(){

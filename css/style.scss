@@ -13,7 +13,7 @@ header {
 	color: white;
 }
 
-#list img {
+.img-star {
 	width: 40%;
 }
 
@@ -21,11 +21,19 @@ header {
 	color: blue;
 }
 
-.listElementNone, .article-img{
+
+.listElementNone, .article-img, .formElementNone{
 	display: none;
 }
 
-.article li {
+.form-avis img{
+	width: 30px;
+	height: 30px;
+	margin: 0 -3px 0 0;
+	background-color: darkgray;
+}
+
+.article li{
 	list-style: none;
 }
 
