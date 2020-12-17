@@ -46,6 +46,7 @@ class Restaurants {
 			  * par 'restaurant' (moi je prefère cette synthaxe
 			  */
 			if(Restaurants.starAverage(restaurant.ratings) >= starMin){
+				addMarkerAll(parseFloat(restaurant.lat), parseFloat(restaurant.lng));
 				html = `<article id="${restaurant.idRestaurant}" class="article">
 					<h5 class="H5">${restaurant.name}</h5>
 					${Restaurants.starsHTML(Restaurants.starAverage(restaurant.ratings))}
@@ -88,6 +89,11 @@ class Restaurants {
 				</article>`;
 				this.listElement.innerHTML += html;
 			
+			}else if(Restaurants.starAverage(restaurant.ratings) < starMin){
+				html = `<article id="${restaurant.idRestaurant}" class="article">
+
+						</article`;
+				this.listElement.innerHTML += html;
 			}	
 		});	
 	}
