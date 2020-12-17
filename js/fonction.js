@@ -1,25 +1,64 @@
-///////////
-// Notation
-///////////
-  var srcIn='img/stars/star_in.gif'; //image au survol
-  var srcOut='img/stars/star_out.gif'; // image non survolée
 
-  // Obtenir id numérique des étoiles au format star_numero
-  function idNum(id)
-  {
-    var id=id.split('_');
-    var id=id[1];
-    return id;
+						
+
+  let img = document.getElementById('img-'+x);
+  img.classList.remove('article-img');
+  let form = document.getElementById('formAvis-'+x);
+  form.classList.remove('formElementNone');
+  let les_stars = form.querySelectorAll('img');
+  let note = 0;
+  for(let w = 0; les_stars.length > w; w++) {
+    // SI survol etoile alors ajouter a note et changer l'image star
+    les_stars[w].addEventListener('mouseover', function(event) {
+      if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_out.gif'){
+          les_stars[w].setAttribute("src", "img/stars/star_in.gif");
+          note++;
+          let inputNote = document.getElementById('note-'+x);
+          inputNote.setAttribute("value", note);
+          
+        }
+      
+    });
+    // si click si etoile alors supprimer de note et changer l'image
+    les_stars[w].addEventListener('click', function(event) {
+      if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
+        les_stars[w].setAttribute("src", "img/stars/star_out.gif");
+        note--;
+        let inputNote = document.getElementById('note-'+x);
+        inputNote.setAttribute("value", note);
+        
+      }
+          
+    });
+      
+      const addAvisBtn = document.querySelector('#avis-'+x);
+      console.log(addAvisBtn);
+      addAvisBtn.addEventListener('click', function(event){
+        let comment = document.getElementById('comment-'+x).innerHTML;
+        let note = document.getElementById('note-'+x).innerHTML;
+        console.log(note);console.log(comment);
+      })
+
+      
   }
 
-// Survol des étoiles
-$('.star').hover(function(){
-        var id=idNum($(this).attr('id')); // id numérique de l'étoile survolée
-        var nbStars=$('.star').length; // Nombre d'étoiles de la classe .star
-        var i; // Variable d'incrémentation
-        for (i=1;i<=nbStars;i++)
-        {
-          if(i<=id) $('#star_'+i).attr({src:srcIn});	
-          else if(i>id) $('#star_'+i).attr({src:srcOut});
-          if(i==id)$('#note').attr({value:i}); // affectation de la note au formulaire
-        } },function(){});
+});
+
+////////////////////////////
+
+
+let les_stars = form.querySelectorAll('img');
+  
+  
+
+
+  for(let w = 0; les_stars.length > w; w++) {
+    if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
+        les_stars[w].setAttribute("src", "img/stars/star_out.gif");
+        note--;
+        console.log(note);
+    }	
+  }
+
+});
+}

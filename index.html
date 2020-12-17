@@ -48,7 +48,7 @@
 	</main>
 	
 	<footer class="row">
-	
+		<p>Site d'avis restaurant p7 openclassroom</p>
 	</footer>
 	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/restaurants.js" type="text/javascript"></script>
@@ -56,8 +56,8 @@
 	<script attib type="text/javascript">
 	
 	
-	var map, infoWindow;
-	var markerRestaurant = [];
+	var map, infoWindow, latitude, longitude;
+	var markerRestaurantAll = [], markerRestaurantZoom = [];
 	var starMin = 0;
 	var montelimar = {lat: 44.557939, lng: 4.750318};
 	const POS = {};
@@ -137,7 +137,7 @@
 			map,
 			icon: 'img/icons/restaurant.png'
 		});
-		markerRestaurant.push(marker);
+		markerRestaurantAll.push(marker);
 	}
 
 	function addMarkerZoom(lat, lng){
@@ -146,15 +146,21 @@
 			map,
 			icon: 'img/icons/restaurant-zoom.png'
 		});
-		markerRestaurant.push(marker);
+		markerRestaurantZoom.push(marker);
 		map.setCenter({lat, lng});
 	}
 	
 	function deleteMarker(){
-		for(i= 0; i < markerRestaurant.length; i++){
-			markerRestaurant[i].setMap(null);
+		for(i= 0; i < markerRestaurantAll.length; i++){
+			markerRestaurantAll[i].setMap(null);
 		}
-		markerRestaurant = [];
+		markerRestaurantAll = [];
+	}
+	function deleteMarkerZoom(){
+		for(i=0; i < markerRestaurantZoom.length; i++){
+			markerRestaurantZoom[i].setMap(null);
+		}
+		markerRestaurantZoom = [];
 	}
 
 	function handleLocationError(browserHasGeolocation, infoWindow, POS) {
@@ -212,9 +218,9 @@
 			// Tu récupère le champs de notation minimum.
 			searchBtn.addEventListener('click', function handler(event) {
 				// Tu enregistres ton événement UNE SEULE fois.
-				
-				Restaurants.clearList();
 				deleteMarker();
+				Restaurants.clearList();
+				
 				/**
 				 * Tu appels une méthode statique de ta class 'Restaurants' qui va
 				 * nettoyer la recherche précédente.
@@ -230,90 +236,52 @@
 				const nodeList = document.getElementsByClassName('article');
 				
 				for (let x = 0; x < nodeList.length; x++) {
+					
 					if(Restaurants.starAverage(restaurants[x].ratings) >= starMin.value){
-						var latitude = document.getElementById('lat-'+x).innerHTML;
-						var longitude = document.getElementById('lng-'+x).innerHTML;	
-						console.log(restaurants[x]);
+						latitude = document.getElementById('lat-'+x).innerHTML;
+						longitude = document.getElementById('lng-'+x).innerHTML;	
 						
 						addMarkerAll(parseFloat(latitude), parseFloat(longitude));
-						
-						nodeList[x].addEventListener('click', function(event) {
-						
-							addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
-							let img = document.getElementById('img-'+x);
-							img.classList.remove('article-img');
-							let form = document.getElementById('formAvis-'+x);
-							form.classList.remove('formElementNone');
-							let les_stars = form.querySelectorAll('img');
-							let note = 0;
-							for(let w = 0; les_stars.length > w; w++) {
-							
-								les_stars[w].addEventListener('mouseover', function(event) {
-									if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_out.gif'){
-										les_stars[w].setAttribute("src", "img/stars/star_in.gif");
-										note++;
-										let inputNote = document.getElementById('note-'+x);
-										inputNote.setAttribute("value", note);
-										console.log(inputNote.value);
-									}
-								
-								});
-								les_stars[w].addEventListener('click', function(event) {
-									if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
-										les_stars[w].setAttribute("src", "img/stars/star_out.gif");
-										note--;
-										let inputNote = document.getElementById('note-'+x);
-										inputNote.setAttribute("value", note);
-										console.log(inputNote.value);
-									}
-										
-								});
-								
-								const addAvisBtn = document.querySelector('#avis-'+x);
-								console.log(addAvisBtn);
-								addAvisBtn.addEventListener('click', function(event){
-									let comment = document.getElementById('comment-'+x).innerHTML;
-									let note = document.getElementById('note-'+x).innerHTML;
-									console.log(note);console.log(comment);
-								})
 
-								let ul = document.getElementById('ul-'+x);
-								let les_li = ul.querySelectorAll('li');
-								for(let y = 0; les_li.length > y ; y++) 
-								{
-									let li = les_li[y];
-									li.classList.remove('listElementNone');
-									
-								} 
+						
+					}		
+						
+					nodeList[x].addEventListener('click', function(event) {
+						// IMG restaurant récup pour modif de la class 'visible'
+						var img = document.getElementById('img-'+x);
+						img.classList.remove('article-img');	
+						// List des commentaires déjà présent pour le restaurant avec leur note modif class 'visible'
+						var ul = document.getElementById('ul-'+x);
+						var les_li = ul.querySelectorAll('li');
+						for(let y = 0; les_li.length > y ; y++) {
+							let li = les_li[y];
+							li.classList.remove('listElementNone');
+											
+						}
+						latitude = document.getElementById('lat-'+x).innerHTML;
+						longitude = document.getElementById('lng-'+x).innerHTML;
+						addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
+
+						
+					});
+					const commentList = document.getElementById('ul-'+x);
+					if(commentList !== null){
+						commentList.addEventListener('mouseleave', function(event){
+							// IMG restaurant récup pour modif de la class 'display : none'
+							var img = document.getElementById('img-'+x);
+							img.classList.add('article-img');
+							// List des commentaires déjà présent pour le restaurant avec leur note modif class 'display : none'
+							var les_li = commentList.querySelectorAll('li');
+							for(let y = 0; les_li.length > y ; y++) {
+								let li = les_li[y];
+								li.classList.add('listElementNone');
 							}
-						
-							const commentList = document.getElementById('ul-'+x);
-							
-							commentList.addEventListener('mouseleave', function(event){
-						
-								addMarkerAll(parseFloat(latitude), parseFloat(longitude));
-								let img = document.getElementById('img-'+x);
-								img.classList.add('article-img');
-								let form = document.getElementById('formAvis-'+x);
-								form.classList.add('formElementNone');
-								let les_stars = form.querySelectorAll('img');
-						
-								for(let w = 0; les_stars.length > w; w++) {
-									if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
-											les_stars[w].setAttribute("src", "img/stars/star_out.gif");
-											note--;
-											console.log(note);
-									}	
-								}
-								let les_li = commentList.querySelectorAll('li');
-								for(let y = 0; les_li.length > y ; y++) {
-									let li = les_li[y];
-									li.classList.add('listElementNone');
-								}
-							});
+								deleteMarkerZoom();
 						});
-					}	
-				}
+					}
+					
+		
+				}				
 				return handler;
 			}());
 		});
