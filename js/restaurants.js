@@ -25,6 +25,7 @@ class Restaurants {
         Restaurants.listElement.innerHTML = null;
 	}
 
+	
 	/**
 	* @displayRestaurants - Afficher les restaurants 
 	* @param {Object} Restaurant
@@ -60,16 +61,16 @@ class Restaurants {
 					</p>
 					<form id="formAvis-${restaurant.idRestaurant}" class="formElementNone form-avis">
 						<h5>Donner votre avis</h5>
-						<textarea id="comment" name="comment" rows="5" cols="33">
+						<textarea id="comment-${restaurant.idRestaurant}" name="comment" rows="5" cols="33">
 
 						</textarea><br />
-						<input type="hidden" name="note" value="" id="note"/>
+						<input type="hidden" name="note" value="" id="note-${restaurant.idRestaurant}"/>
   						<img src="img/stars/star_out.gif" id="star_1" class="star"/>
   						<img src="img/stars/star_out.gif" id="star_2" class="star"/>
   						<img src="img/stars/star_out.gif" id="star_3" class="star"/>
   						<img src="img/stars/star_out.gif" id="star_4" class="star"/>
 						<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
-						<button type="button" id="avis">Envoyer</button>  
+						<button type="button" id="avis-${restaurant.idRestaurant}">Envoyer</button>  
 					</form>
 					<ul id="ul-${restaurant.idRestaurant}">
 					`
@@ -80,6 +81,7 @@ class Restaurants {
 					 */
 					html +=
 					`<li class="listElementNone article-${restaurant.idRestaurant}">${Restaurants.starsHTML(rating.stars)}-${rating.comment}</li>`
+					
 				);
 				html +=
 				`   </ul>
