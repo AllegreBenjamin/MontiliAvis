@@ -101,29 +101,26 @@ class Restaurants {
 		});	
 	}
 	
-	static addNewRestaurant(latLng){
-		let list = this.listElement.getElementsByClassName('article');
-		let html = '';
-		let idNewRestaurant = list.length;
-		console.log(latLng);
-		let lat = latLng.d;
-		let lng = latLng.e;
-		let name = prompt("Quel est le nom du restaurant ?");
-		let address = prompt("Renseigner l'adresse ?");
-		let description = prompt("Renseigner description ?");
-		let stars = parseInt(prompt("Noter le restaurant de 1 à 5 ?"));
-		let comment = prompt("Ajouter un commentaire ?");
-		let ratings = [
-			{
-			'stars' : stars,
-			'comment' : comment
-			},
-		]
-		html = `article id="${idNewRestaurant}" class="article">
+	static addNewRestaurant(lat, lng){
+		let list = this.listElement.getElementsByClassName('article'),
+	 		html = '',
+			idNewRestaurant = list.length,
+			name = prompt("Quel est le nom du restaurant ?"),
+			address = prompt("Renseigner l'adresse ?"),
+			description = prompt("Renseigner description ?"),
+			stars = parseInt(prompt("Noter le restaurant de 1 à 5 ?")),
+			comment = prompt("Ajouter un commentaire ?"),
+			ratings = [
+				{
+				'stars' : stars,
+				'comment' : comment
+				},
+			]
+		html = `<article id="${idNewRestaurant}" class="article">
 				<h5 class="H5">${name}</h5>
 					${Restaurants.starsHTML(Restaurants.starAverage(ratings))}
 					<p>${address}</p>
-					<img class="article-img"
+					<img class=""
 						id="img-${idNewRestaurant}"
 						src="https://maps.googleapis.com/maps/api/streetview?location=${lat},${lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
 						alt="image street view" />
@@ -132,7 +129,7 @@ class Restaurants {
 						Lat : <span id="lat-${idNewRestaurant}">${lat}</span>
 						Lng : <span id="lng-${idNewRestaurant}">${lng}</span>
 					</p>
-					<form id="formAvis-${idNewRestaurant}" class="formElementNone form-avis">
+					<form id="formAvis-${idNewRestaurant}" class="form-avis">
 						<h5>Donner votre avis</h5>
 						<textarea id="comment-${idNewRestaurant}" name="comment" rows="5" cols="33">
 
@@ -150,7 +147,7 @@ class Restaurants {
 					</form>
 					<ul id="ul-${idNewRestaurant}">
 					
-						<li class="listElementNone article-${idNewRestaurant}">${Restaurants.starsHTML(stars)}-${comment}</li>
+						<li class="article-${idNewRestaurant}">${Restaurants.starsHTML(stars)}-${comment}</li>
 					
 					</ul>
 				</article>`

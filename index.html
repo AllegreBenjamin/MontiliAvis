@@ -130,8 +130,7 @@
 		
 		map.addListener("click", (e) => {
 			placeMarkerNewRestaurant(e.latLng, map);
-			console.log(e.latLng.lat.d);
-			Restaurants.addNewRestaurant(e.latLng);
+			Restaurants.addNewRestaurant(e.latLng.lat(), e.latLng.lng());
 		});
 		
 	}
@@ -161,7 +160,6 @@
 			map: map,
 			icon: 'img/icons/restaurant-zoom.png'
 		});
-		
 		markerRestaurantZoom.push(marker);
 		map.panTo(latLng);
 	}
@@ -327,7 +325,7 @@
 						});
 
 						
-					},true);
+					});
 
 					const commentList = document.getElementById('ul-'+x);
 					if(commentList !== null){
