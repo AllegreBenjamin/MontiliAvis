@@ -35,10 +35,10 @@ class Restaurants {
 		
 		 // 'restaurants' est un array de restaurant et pas une seule instance.
 		Restaurants.clearList();
-		
+		 let errNote1 = null, errNote2 = null, errComment1 = null, errComment2 = null; 
 		 // On efface la liste.
 		 let html = '';
-
+		 	
 		 // On initialise la variable sous la forme d'une string
 		 restaurants.forEach(restaurant => {
 			 /**
@@ -64,14 +64,17 @@ class Restaurants {
 						<h5>Donner votre avis</h5>
 						<textarea id="comment-${restaurant.idRestaurant}" name="comment" rows="5" cols="33">
 
-						</textarea><br />
+						</textarea><br /> 
+							
 						<input type="hidden" name="note" value="" id="note-${restaurant.idRestaurant}"/>
-  						<img src="img/stars/star_out.gif" id="star_1" class="star"/>
-  						<img src="img/stars/star_out.gif" id="star_2" class="star"/>
-  						<img src="img/stars/star_out.gif" id="star_3" class="star"/>
-  						<img src="img/stars/star_out.gif" id="star_4" class="star"/>
-						<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
-						<button type="button" id="avis-${restaurant.idRestaurant}">Envoyer</button>  
+  							<img src="img/stars/star_out.gif" id="star_1" class="star"/>
+  							<img src="img/stars/star_out.gif" id="star_2" class="star"/>
+  							<img src="img/stars/star_out.gif" id="star_3" class="star"/>
+  							<img src="img/stars/star_out.gif" id="star_4" class="star"/>
+							<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
+							<input type="reset" value="Reset"/>
+							<input type="button" id="avis-${restaurant.idRestaurant}" value="Envoyer"/>
+						
 					</form>
 					<ul id="ul-${restaurant.idRestaurant}">
 					`
@@ -96,6 +99,62 @@ class Restaurants {
 				this.listElement.innerHTML += html;
 			}	
 		});	
+	}
+	
+	static addNewRestaurant(latLng){
+		let list = this.listElement.getElementsByClassName('article');
+		let html = '';
+		let idNewRestaurant = list.length;
+		console.log(latLng);
+		let lat = latLng.d;
+		let lng = latLng.e;
+		let name = prompt("Quel est le nom du restaurant ?");
+		let address = prompt("Renseigner l'adresse ?");
+		let description = prompt("Renseigner description ?");
+		let stars = parseInt(prompt("Noter le restaurant de 1 à 5 ?"));
+		let comment = prompt("Ajouter un commentaire ?");
+		let ratings = [
+			{
+			'stars' : stars,
+			'comment' : comment
+			},
+		]
+		html = `article id="${idNewRestaurant}" class="article">
+				<h5 class="H5">${name}</h5>
+					${Restaurants.starsHTML(Restaurants.starAverage(ratings))}
+					<p>${address}</p>
+					<img class="article-img"
+						id="img-${idNewRestaurant}"
+						src="https://maps.googleapis.com/maps/api/streetview?location=${lat},${lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
+						alt="image street view" />
+					<p>${description}</p>
+					<p>
+						Lat : <span id="lat-${idNewRestaurant}">${lat}</span>
+						Lng : <span id="lng-${idNewRestaurant}">${lng}</span>
+					</p>
+					<form id="formAvis-${idNewRestaurant}" class="formElementNone form-avis">
+						<h5>Donner votre avis</h5>
+						<textarea id="comment-${idNewRestaurant}" name="comment" rows="5" cols="33">
+
+						</textarea><br /> 
+							
+						<input type="hidden" name="note" value="" id="note-${idNewRestaurant}"/>
+  							<img src="img/stars/star_out.gif" id="star_1" class="star"/>
+  							<img src="img/stars/star_out.gif" id="star_2" class="star"/>
+  							<img src="img/stars/star_out.gif" id="star_3" class="star"/>
+  							<img src="img/stars/star_out.gif" id="star_4" class="star"/>
+							<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
+							<input type="reset" value="Reset"/>
+							<input type="button" id="avis-${idNewRestaurant}" value="Envoyer"/>
+						
+					</form>
+					<ul id="ul-${idNewRestaurant}">
+					
+						<li class="listElementNone article-${idNewRestaurant}">${Restaurants.starsHTML(stars)}-${comment}</li>
+					
+					</ul>
+				</article>`
+		this.listElement.innerHTML += html;
 	}
 	
 	static clearList(){

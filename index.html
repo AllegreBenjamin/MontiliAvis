@@ -56,10 +56,10 @@
 	<script type="text/javascript">
 	
 	
-	var map, infoWindow, latitude, longitude;
-	var markerRestaurantAll = [], markerRestaurantZoom = [];
-	var starMin = 0;
-	var montelimar = {lat: 44.557939, lng: 4.750318};
+	let map, infoWindow, latitude, longitude;
+	let markerRestaurantAll = [], markerRestaurantZoom = [];
+	let starMin = 0;
+	let montelimar = {lat: 44.557939, lng: 4.750318};
 	const POS = {};
 
 
@@ -101,38 +101,43 @@
 		});
 
 		new google.maps.Marker({
-			position: montelimar,
-			map,
-			icon: 'img/icons/panneau-ville-montelimar.png'
+				position: montelimar,
+				map,
+				icon: 'img/icons/panneau-ville-montelimar.png'
 		});
 
 		infoWindow = new google.maps.InfoWindow();
-  		
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					POS.lat = position.coords.latitude,
-					POS.lng = position.coords.longitude;
-					
-					let markerYourPos = new google.maps.Marker({
-						position: POS,
-						map: map,
-						icon: 'img/icons/vous-etes-ici.png'
-					});
 
-					map.setCenter(POS);
-				}
-			);
-		} else {
-			// Browser doesn't support Geolocation
-			handleLocationError(false, infoWindow, map.getCenter());
-		}
-		  
+		if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						POS.lat = position.coords.latitude,
+						POS.lng = position.coords.longitude;
+						
+						let markerYourPos = new google.maps.Marker({
+							position: POS,
+							map: map,
+							icon: 'img/icons/vous-etes-ici.png'
+						});
+
+						map.setCenter(POS);
+					}
+				);
+			} else {
+				// Browser doesn't support Geolocation
+				handleLocationError(false, infoWindow, map.getCenter());
+			}
+		
+		map.addListener("click", (e) => {
+			placeMarkerNewRestaurant(e.latLng, map);
+			console.log(e.latLng.lat.d);
+			Restaurants.addNewRestaurant(e.latLng);
+		});
 		
 	}
 
 	function addMarkerAll(lat, lng){
-		var marker = new google.maps.Marker({
+		let marker = new google.maps.Marker({
 			position: {lat, lng},
 			map,
 			icon: 'img/icons/restaurant.png'
@@ -141,13 +146,24 @@
 	}
 
 	function addMarkerZoom(lat, lng){
-		var marker = new google.maps.Marker({
+		let marker = new google.maps.Marker({
 			position: {lat, lng},
 			map,
 			icon: 'img/icons/restaurant-zoom.png'
 		});
 		markerRestaurantZoom.push(marker);
 		map.setCenter({lat, lng});
+	}
+	
+	function placeMarkerNewRestaurant(latLng, map){
+		let marker = new google.maps.Marker({
+			position: latLng,
+			map: map,
+			icon: 'img/icons/restaurant-zoom.png'
+		});
+		
+		markerRestaurantZoom.push(marker);
+		map.panTo(latLng);
 	}
 	
 	function deleteMarker(){
@@ -174,10 +190,10 @@
 	}
 
 	function getRestaurantsJSON(callback) {
-	   var request = new XMLHttpRequest();
+	   let request = new XMLHttpRequest();
 		request.onreadystatechange = function() {
 			if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-				var restaurantsResponses = JSON.parse(this.responseText);
+				let restaurantsResponses = JSON.parse(this.responseText);
 				
 				// appel callback car appel terminé
 				callback(restaurantsResponses);
@@ -217,6 +233,7 @@
 			const starMin = document.querySelector('#starMin');
 			// Tu récupère le champs de notation minimum.
 			searchBtn.addEventListener('click', function handler(event) {
+			
 				// Tu enregistres ton événement UNE SEULE fois.
 				deleteMarker();
 				Restaurants.clearList();
@@ -236,34 +253,93 @@
 				const nodeList = document.getElementsByClassName('article');
 				
 				for (let x = 0; x < nodeList.length; x++) {
-					
 						
 					nodeList[x].addEventListener('click', function(event) {
+						console.log('addEvent');
+						
 						// IMG restaurant récup pour modif de la class 'visible'
-						var img = document.getElementById('img-'+x);
-						img.classList.remove('article-img');	
+						let img = document.getElementById('img-'+x);
+						img.classList.remove('article-img');
+						// afficher le formulaire pour donner sont avis
+						let form = document.getElementById('formAvis-'+x);
+  						form.classList.remove('formElementNone');
+						let les_stars = form.querySelectorAll('img');
+						let note = 0;
+						for(let w = 0; les_stars.length > w; w++) {
+							
+							// SI survol etoile alors ajouter a note et changer l'image star
+							les_stars[w].addEventListener('mouseover', function(event) {
+								
+								if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_out.gif'){
+									les_stars[w].setAttribute("src", "img/stars/star_in.gif");
+									note++;
+									let inputNote = document.getElementById('note-'+x);
+									inputNote.setAttribute("value", note);
+									
+								}
+      						});
+							// si click si etoile alors supprimer de note et changer l'image
+							les_stars[w].addEventListener('click', function(event) {
+								if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
+									les_stars[w].setAttribute("src", "img/stars/star_out.gif");
+									note--;
+									let inputNote = document.getElementById('note-'+x);
+									inputNote.setAttribute("value", note);
+									
+								}
+							  });
+							 
+						}
+ 
 						// List des commentaires déjà présent pour le restaurant avec leur note modif class 'visible'
-						var ul = document.getElementById('ul-'+x);
-						var les_li = ul.querySelectorAll('li');
+						let ul = document.getElementById('ul-'+x);
+						let les_li = ul.querySelectorAll('li');
 						for(let y = 0; les_li.length > y ; y++) {
 							let li = les_li[y];
 							li.classList.remove('listElementNone');
 											
 						}
+						
 						latitude = document.getElementById('lat-'+x).innerHTML;
 						longitude = document.getElementById('lng-'+x).innerHTML;
 						addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
 
+						const addAvisBtn = document.querySelector('#avis-'+x);
 						
-					});
+						addAvisBtn.addEventListener('click', function(event){
+							console.log('click');	
+							let comment = document.getElementById('comment-'+x).value;
+							if(typeof comment !== 'string'){
+								errComment1 = "Not a string!";
+								console.log(errComment1); 
+							}else if(comment === null || comment === undefined){
+								errComment2 = "Le commentaire est important penser à en inscrire";
+								console.log(errComment2);
+							}else{
+								let inputNote = document.getElementById('note-'+x).value;
+								let li = document.createElement('li');
+								li.setAttribute('class', 'article-'+x);
+								li.innerHTML = Restaurants.starsHTML(inputNote) + '-'  + comment;
+								ul.appendChild(li);
+								
+							}
+					
+						});
+
+						
+					},true);
+
 					const commentList = document.getElementById('ul-'+x);
 					if(commentList !== null){
 						commentList.addEventListener('mouseleave', function(event){
 							// IMG restaurant récup pour modif de la class 'display : none'
-							var img = document.getElementById('img-'+x);
+							let img = document.getElementById('img-'+x);
 							img.classList.add('article-img');
+							// cacher le formulaire pour donner sont avis
+							let form = document.getElementById('formAvis-'+x);
+							form.classList.add('formElementNone');
 							// List des commentaires déjà présent pour le restaurant avec leur note modif class 'display : none'
-							var les_li = commentList.querySelectorAll('li');
+							let les_li = commentList.querySelectorAll('li');
 							for(let y = 0; les_li.length > y ; y++) {
 								let li = les_li[y];
 								li.classList.add('listElementNone');
@@ -272,8 +348,8 @@
 						});
 					}
 					
-		
-				}				
+				}
+					
 				return handler;
 			}());
 		});
