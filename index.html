@@ -412,21 +412,17 @@
 			
 
 				for (let x = 0; x < nodeList.length; x++) {
-							
-					// Affiche restaurant onclick 
-					nodeList[x].addEventListener('click', () => {
+						
+						 // Affiche restaurant onclick 
+						 nodeList[x].addEventListener('click', () => {
 						// vérifie que le restaurant n'est pas déjà ouvert
 						if (document.querySelector('#formAvis-'+x).classList.contains('formElementNone')) {
-							Restaurants.displayRestaurant(x);
-							
-						}
-          			});
-					
-					
-			
-					const addAvisBtn = document.querySelector('#avis-'+x);
+							Restaurants.displayRestaurant(x)
+							}
+						});
+						const addAvisBtn = document.querySelector('#avis-'+x);
 						
-					addAvisBtn.addEventListener('click', function(event){
+						addAvisBtn.addEventListener('click', function(event){
 							console.log('click');	
 							let comment = document.getElementById('comment-'+x).value;
 							if(typeof comment !== 'string'){
