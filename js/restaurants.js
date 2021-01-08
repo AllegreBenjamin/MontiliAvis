@@ -25,7 +25,8 @@ class Restaurants {
         Restaurants.listElement.innerHTML = null;
 	}
 
-	
+
+
 	/**
 	* @displayRestaurants - Afficher les restaurants 
 	* @param {Object} Restaurant
@@ -35,7 +36,6 @@ class Restaurants {
 		
 		 // 'restaurants' est un array de restaurant et pas une seule instance.
 		Restaurants.clearList();
-		 let errNote1 = null, errNote2 = null, errComment1 = null, errComment2 = null; 
 		 // On efface la liste.
 		 let html = '';
 		 	
@@ -46,7 +46,7 @@ class Restaurants {
 			  * par 'restaurant' (moi je prefère cette synthaxe
 			  */
 			if(Restaurants.starAverage(restaurant.ratings) >= starMin){
-				addMarkerAll(parseFloat(restaurant.lat), parseFloat(restaurant.lng));
+				addMarkerClub(parseFloat(restaurant.lat), parseFloat(restaurant.lng));
 				html = `<article id="${restaurant.idRestaurant}" class="article">
 					<h5 class="H5">${restaurant.name}</h5>
 					${Restaurants.starsHTML(Restaurants.starAverage(restaurant.ratings))}
@@ -61,7 +61,7 @@ class Restaurants {
 						Lng : <span id="lng-${restaurant.idRestaurant}">${restaurant.lng}</span>
 					</p>
 					<form id="formAvis-${restaurant.idRestaurant}" class="formElementNone form-avis">
-						<h5>Donner votre avis</h5>
+						<h6>Donner votre avis</h6>
 						<textarea id="comment-${restaurant.idRestaurant}" name="comment" rows="5" cols="33">
 
 						</textarea><br /> 
@@ -100,6 +100,107 @@ class Restaurants {
 			}	
 		});	
 	}
+	
+	static displayRestaurantExt(restaurant, starMin){
+		let html = '';
+		if(Restaurants.starAverage(restaurant.ratings) >= starMin){
+			addMarkerPlace(parseFloat(restaurant.lat), parseFloat(restaurant.lng));
+			html = `<article id="${restaurant.idRestaurant}" class="article">
+			<h5 class="H5">${restaurant.name}</h5>
+			${Restaurants.starsHTML(Restaurants.starAverage(restaurant.ratings))}
+			<p>${restaurant.address}</p>
+			<img class="article-img"
+				id="img-${restaurant.idRestaurant}"
+				src="https://maps.googleapis.com/maps/api/streetview?location=${restaurant.lat},${restaurant.lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
+				alt="image street view" />
+			<p>${restaurant.description}</p>
+			<p>Lat : <span id="lat-${restaurant.idRestaurant}">${restaurant.lat}</span>
+			Lng : <span id="lng-${restaurant.idRestaurant}">${restaurant.lng}</span>
+			</p>
+			<form id="formAvis-${restaurant.idRestaurant}" class="formElementNone form-avis">
+				<h6>Donner votre avis</h6>
+				<textarea id="comment-${restaurant.idRestaurant}" name="comment" rows="5" cols="33">
+
+				</textarea><br /> 
+					
+				<input type="hidden" name="note" value="" id="note-${restaurant.idRestaurant}"/>
+					<img src="img/stars/star_out.gif" id="star_1" class="star"/>
+					<img src="img/stars/star_out.gif" id="star_2" class="star"/>
+					<img src="img/stars/star_out.gif" id="star_3" class="star"/>
+					<img src="img/stars/star_out.gif" id="star_4" class="star"/>
+					<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
+					<input type="reset" value="Reset"/>
+					<input type="button" id="avis-${restaurant.idRestaurant}" value="Envoyer"/>
+				
+			</form>
+			<ul id="ul-${restaurant.idRestaurant}">`
+			restaurant.ratings.forEach(rating =>
+				/**
+				 * Pour chaque note du restaurant actuel, on procède
+				 * de la même manière avec un template de note :
+				 */
+				html +=
+				`<li class="listElementNone article-${restaurant.idRestaurant}">${Restaurants.starsHTML(rating.stars)}-${rating.comment}</li>`
+				
+			);
+			html +=
+			`   </ul>
+			</article>`;
+			this.listElement.innerHTML += html;
+		
+		}else if(Restaurants.starAverage(restaurant.ratings) < starMin){
+			html = `<article id="${restaurant.idRestaurant}" class="article">
+
+					</article`;
+			this.listElement.innerHTML += html;
+		}	
+		
+	}
+	static displayRestaurant(x){
+		// IMG restaurant récup pour modif de la class 'visible'
+		let img = document.getElementById('img-'+x);
+		img.classList.remove('article-img');
+		// afficher le formulaire pour donner sont avis
+		let form = document.getElementById('formAvis-'+x);
+  		form.classList.remove('formElementNone');
+		let les_stars = form.querySelectorAll('img');
+		let note = 0;
+		for(let w = 0; les_stars.length > w; w++) {
+							
+			// SI survol etoile alors ajouter a note et changer l'image star
+			les_stars[w].addEventListener('mouseover', function(event) {
+									
+				if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_out.gif'){
+					les_stars[w].setAttribute("src", "img/stars/star_in.gif");
+					note++;
+					let inputNote = document.getElementById('note-'+x);
+					inputNote.setAttribute("value", note);
+				}
+			});
+			// si click si etoile alors supprimer de note et changer l'image
+			les_stars[w].addEventListener('click', function(event) {
+				if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
+					les_stars[w].setAttribute("src", "img/stars/star_out.gif");
+					note--;
+					let inputNote = document.getElementById('note-'+x);
+					inputNote.setAttribute("value", note);
+				}
+			});
+		}
+ 
+		let ul = document.getElementById('ul-'+x);
+		let les_li = ul.querySelectorAll('li');
+		for(let y = 0; les_li.length > y ; y++) {
+			let li = les_li[y];
+			li.classList.remove('listElementNone');
+		}
+						
+		latitude = document.getElementById('lat-'+x).innerHTML;
+		longitude = document.getElementById('lng-'+x).innerHTML;
+		addMarkerClubZoom(parseFloat(latitude), parseFloat(longitude));
+	}
+	
+		
 	
 	static addNewRestaurant(lat, lng){
 		let list = this.listElement.getElementsByClassName('article'),
