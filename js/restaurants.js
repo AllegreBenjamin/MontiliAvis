@@ -35,7 +35,7 @@ class Restaurants {
 		
 		 // 'restaurants' est un array de restaurant et pas une seule instance.
 		Restaurants.clearList();
-		 let errNote1 = null, errNote2 = null, errComment1 = null, errComment2 = null; 
+		
 		 // On efface la liste.
 		 let html = '';
 		 	
@@ -100,7 +100,51 @@ class Restaurants {
 			}	
 		});	
 	}
-	
+
+	static displayRestaurant(x){
+		// IMG restaurant récup pour modif de la class 'visible'
+		let img = document.getElementById('img-'+x);
+		img.classList.remove('article-img');
+		// afficher le formulaire pour donner sont avis
+		let form = document.getElementById('formAvis-'+x);
+  		form.classList.remove('formElementNone');
+		let les_stars = form.querySelectorAll('img');
+		let note = 0;
+		for(let w = 0; les_stars.length > w; w++) {
+							
+			// SI survol etoile alors ajouter a note et changer l'image star
+			les_stars[w].addEventListener('mouseover', function(event) {
+									
+				if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_out.gif'){
+					les_stars[w].setAttribute("src", "img/stars/star_in.gif");
+					note++;
+					let inputNote = document.getElementById('note-'+x);
+					inputNote.setAttribute("value", note);
+				}
+			});
+			// si click si etoile alors supprimer de note et changer l'image
+			les_stars[w].addEventListener('click', function(event) {
+				if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
+					les_stars[w].setAttribute("src", "img/stars/star_out.gif");
+					note--;
+					let inputNote = document.getElementById('note-'+x);
+					inputNote.setAttribute("value", note);
+				}
+			});
+		}
+ 
+		let ul = document.getElementById('ul-'+x);
+		let les_li = ul.querySelectorAll('li');
+		for(let y = 0; les_li.length > y ; y++) {
+			let li = les_li[y];
+			li.classList.remove('listElementNone');
+		}
+						
+		latitude = document.getElementById('lat-'+x).innerHTML;
+		longitude = document.getElementById('lng-'+x).innerHTML;
+		addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
+	}
+
 	static addNewRestaurant(lat, lng){
 		let list = this.listElement.getElementsByClassName('article'),
 	 		html = '',
