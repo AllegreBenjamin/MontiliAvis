@@ -1,13 +1,20 @@
 class Restaurants {
 
-	constructor(idRestaurant, name, address, description, lat, lng, ratings){
+	constructor(idRestaurant, placeId, name, address, lat, lng, userRatingsTotal, rating, formattedPhoneNumber, reviews, openingHours, photos, website, priceLevel){
 		this.idRestaurant = idRestaurant;
+		this.placeId = placeId;
 		this.name = name;
 		this.address = address;
-		this.description = description;
 		this.lat = lat;
 		this.lng = lng;
-		this.ratings = ratings;
+		this.userRatingsTotal = userRatingsTotal;
+		this.rating = rating;
+		this.formattedPhoneNumber = formattedPhoneNumber;
+		this.reviews = reviews;
+		this.openingHours = openingHours;
+		this.photos = photos;
+		this.website = website;
+		this.priceLevel = priceLevel;
 	}
 	/**
 	 * @listElement - renvoi l'élément du DOM qui correspond à ta liste de restaurant et qui servira dans les autres méthodes de cette class. 
@@ -25,137 +32,91 @@ class Restaurants {
         Restaurants.listElement.innerHTML = null;
 	}
 
-
-
 	/**
-	* @displayRestaurants - Afficher les restaurants 
-	* @param {Object} Restaurant
-	* @param {number} starAverage
-	*/
-	static displayRestaurants(restaurants, starMin){
+	 * 
+	 * @param {*} newRestaurant 
+	 * @param {*} starMin 
+	 */
+	static displayRestaurants(newRestaurant, starMin){
+		console.log(newRestaurant)
 		
-		 // 'restaurants' est un array de restaurant et pas une seule instance.
-		Restaurants.clearList();
 		 // On efface la liste.
 		 let html = '';
-		 	
-		 // On initialise la variable sous la forme d'une string
-		 restaurants.forEach(restaurant => {
+
 			 /**
 			  * On ajoute le début du template d'un article en remplaçant ton usage de 'this'
 			  * par 'restaurant' (moi je prefère cette synthaxe
 			  */
-			if(Restaurants.starAverage(restaurant.ratings) >= starMin){
-				addMarkerClub(parseFloat(restaurant.lat), parseFloat(restaurant.lng));
-				html = `<article id="${restaurant.idRestaurant}" class="article">
-					<h5 class="H5">${restaurant.name}</h5>
-					${Restaurants.starsHTML(Restaurants.starAverage(restaurant.ratings))}
-					<p>${restaurant.address}</p>
-					<img class="article-img"
-						id="img-${restaurant.idRestaurant}"
-						src="https://maps.googleapis.com/maps/api/streetview?location=${restaurant.lat},${restaurant.lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
-						alt="image street view" />
-					<p>${restaurant.description}</p>
-					<p>
-						Lat : <span id="lat-${restaurant.idRestaurant}">${restaurant.lat}</span>
-						Lng : <span id="lng-${restaurant.idRestaurant}">${restaurant.lng}</span>
-					</p>
-					<form id="formAvis-${restaurant.idRestaurant}" class="formElementNone form-avis">
+
+			if(newRestaurant.rating >= starMin){
+				addMarker(parseFloat(newRestaurant.lat), parseFloat(newRestaurant.lng));
+				html = `<article id="${newRestaurant.idRestaurant}" class="article">
+					<div class="col-lg-12">				
+						<h5 class="H5">${newRestaurant.name}</h5>${Restaurants.starsHTML(newRestaurant.rating)}
+					</div>
+					<div class="row">
+						<div class="street-view-img col-lg-6">	
+							<img class="article-img"
+								id="img-${newRestaurant.idRestaurant}"
+								src="https://maps.googleapis.com/maps/api/streetview?location=${newRestaurant.lat},${newRestaurant.lng}&size=256x256&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
+								alt="image street view" />
+						</div>
+						<div class="restaurant-info col-lg-6">
+							<p>${newRestaurant.address}</p>
+							<p>Avis total: ${newRestaurant.userRatingsTotal}</p>
+							<p>Téléphone: ${newRestaurant.formattedPhoneNumber}</p>
+							<p>
+								Lat : <span id="lat-${newRestaurant.idRestaurant}">${newRestaurant.lat}</span>
+								Lng : <span id="lng-${newRestaurant.idRestaurant}">${newRestaurant.lng}</span>
+							</p>
+						</div>
+					</div>
+					<form id="formAvis-${newRestaurant.idRestaurant}" class="formElementNone form-avis">
 						<h6>Donner votre avis</h6>
-						<textarea id="comment-${restaurant.idRestaurant}" name="comment" rows="5" cols="33">
+						<textarea id="comment-${newRestaurant.idRestaurant}" name="comment" rows="5" cols="33">
 
 						</textarea><br /> 
 							
-						<input type="hidden" name="note" value="" id="note-${restaurant.idRestaurant}"/>
+						<input type="hidden" name="note" value="" id="note-${newRestaurant.idRestaurant}"/>
   							<img src="img/stars/star_out.gif" id="star_1" class="star"/>
   							<img src="img/stars/star_out.gif" id="star_2" class="star"/>
   							<img src="img/stars/star_out.gif" id="star_3" class="star"/>
   							<img src="img/stars/star_out.gif" id="star_4" class="star"/>
 							<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
 							<input type="reset" value="Reset"/>
-							<input type="button" id="avis-${restaurant.idRestaurant}" value="Envoyer"/>
+							<input type="button" id="avis-${newRestaurant.idRestaurant}" value="Envoyer"/>
 						
 					</form>
-					<ul id="ul-${restaurant.idRestaurant}">
-					`
-				restaurant.ratings.forEach(rating =>
-					/**
+					<div id="avis" class="listElementNone">`
+
+				newRestaurant.reviews.forEach(review => {
+					
+					/*
 					 * Pour chaque note du restaurant actuel, on procède
 					 * de la même manière avec un template de note :
-					 */
+					*/
 					html +=
-					`<li class="listElementNone article-${restaurant.idRestaurant}">${Restaurants.starsHTML(rating.stars)}-${rating.comment}</li>`
+					`
+					<div class="article-${newRestaurant.idRestaurant}">;
+						<p>${review.author_name} - ${review.relative_time_description}</p>
+						<p>${Restaurants.starsHTML(review.rating)} - ${review.text}</p>
+					</div>`
 					
-				);
-				html +=
-				`   </ul>
-				</article>`;
+				}); 	 
+			
+				`</div>
+				</article>`
 				this.listElement.innerHTML += html;
 			
-			}else if(Restaurants.starAverage(restaurant.ratings) < starMin){
-				html = `<article id="${restaurant.idRestaurant}" class="article">
+			}else if(newRestaurant.rating < starMin){
+				html = `<article id="${newRestaurant.idRestaurant}" class="article">
 
 						</article`;
 				this.listElement.innerHTML += html;
 			}	
-		});	
+		
 	}
 	
-	static displayRestaurantExt(restaurant, starMin){
-		let html = '';
-		if(Restaurants.starAverage(restaurant.ratings) >= starMin){
-			addMarkerPlace(parseFloat(restaurant.lat), parseFloat(restaurant.lng));
-			html = `<article id="${restaurant.idRestaurant}" class="article">
-			<h5 class="H5">${restaurant.name}</h5>
-			${Restaurants.starsHTML(Restaurants.starAverage(restaurant.ratings))}
-			<p>${restaurant.address}</p>
-			<img class="article-img"
-				id="img-${restaurant.idRestaurant}"
-				src="https://maps.googleapis.com/maps/api/streetview?location=${restaurant.lat},${restaurant.lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
-				alt="image street view" />
-			<p>${restaurant.description}</p>
-			<p>Lat : <span id="lat-${restaurant.idRestaurant}">${restaurant.lat}</span>
-			Lng : <span id="lng-${restaurant.idRestaurant}">${restaurant.lng}</span>
-			</p>
-			<form id="formAvis-${restaurant.idRestaurant}" class="formElementNone form-avis">
-				<h6>Donner votre avis</h6>
-				<textarea id="comment-${restaurant.idRestaurant}" name="comment" rows="5" cols="33">
-
-				</textarea><br /> 
-					
-				<input type="hidden" name="note" value="" id="note-${restaurant.idRestaurant}"/>
-					<img src="img/stars/star_out.gif" id="star_1" class="star"/>
-					<img src="img/stars/star_out.gif" id="star_2" class="star"/>
-					<img src="img/stars/star_out.gif" id="star_3" class="star"/>
-					<img src="img/stars/star_out.gif" id="star_4" class="star"/>
-					<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
-					<input type="reset" value="Reset"/>
-					<input type="button" id="avis-${restaurant.idRestaurant}" value="Envoyer"/>
-				
-			</form>
-			<ul id="ul-${restaurant.idRestaurant}">`
-			restaurant.ratings.forEach(rating =>
-				/**
-				 * Pour chaque note du restaurant actuel, on procède
-				 * de la même manière avec un template de note :
-				 */
-				html +=
-				`<li class="listElementNone article-${restaurant.idRestaurant}">${Restaurants.starsHTML(rating.stars)}-${rating.comment}</li>`
-				
-			);
-			html +=
-			`   </ul>
-			</article>`;
-			this.listElement.innerHTML += html;
-		
-		}else if(Restaurants.starAverage(restaurant.ratings) < starMin){
-			html = `<article id="${restaurant.idRestaurant}" class="article">
-
-					</article`;
-			this.listElement.innerHTML += html;
-		}	
-		
-	}
 	static displayRestaurant(x){
 		// IMG restaurant récup pour modif de la class 'visible'
 		let img = document.getElementById('img-'+x);
@@ -188,19 +149,69 @@ class Restaurants {
 			});
 		}
  
-		let ul = document.getElementById('ul-'+x);
-		let les_li = ul.querySelectorAll('li');
-		for(let y = 0; les_li.length > y ; y++) {
-			let li = les_li[y];
-			li.classList.remove('listElementNone');
-		}
+		let div = document.getElementById('avis');
+	
+		div.classList.remove('listElementNone');
+		
 						
 		latitude = document.getElementById('lat-'+x).innerHTML;
 		longitude = document.getElementById('lng-'+x).innerHTML;
-		addMarkerClubZoom(parseFloat(latitude), parseFloat(longitude));
+		addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
 	}
 	
-		
+	static addListenerFormAndComment() {
+		const nodeList = document.getElementsByClassName('article');
+
+		for (let x = 0; x < nodeList.length; x++) {
+			
+			// Affiche restaurant onclick 
+			nodeList[x].addEventListener('click', () => {
+			// vérifie que le restaurant n'est pas déjà ouvert
+				if (document.querySelector('#formAvis-'+x).classList.contains('formElementNone')) {
+					Restaurants.displayRestaurant(x)
+				}
+			});
+			const addAvisBtn = document.querySelector('#avis-'+x);
+				
+			addAvisBtn.addEventListener('click', function(event){
+				console.log('click');	
+				let comment = document.getElementById('comment-'+x).value;
+				if(typeof comment !== 'string'){
+					errComment1 = "Not a string!";
+					console.log(errComment1); 
+				}else if(comment === null || comment === undefined){
+					errComment2 = "Le commentaire est important penser à en inscrire";
+					console.log(errComment2);
+				}else{
+					let inputNote = document.getElementById('note-'+x).value;
+					let divAvis = document.getElementById('avis');
+					let div = document.createElement('div');
+					div.setAttribute('class', 'article-'+x);
+					li.innerHTML = Restaurants.starsHTML(inputNote) + '-'  + comment;
+					ul.appendChild(li);
+				}
+			});
+
+			const commentList = document.getElementById('ul-'+x);
+			if(commentList !== null){
+				commentList.addEventListener('mouseleave', function(event){
+					// IMG restaurant récup pour modif de la class 'display : none'
+					let img = document.getElementById('img-'+x);
+					img.classList.add('article-img');
+					// cacher le formulaire pour donner sont avis
+					let form = document.getElementById('formAvis-'+x);
+					form.classList.add('formElementNone');
+					// List des commentaires déjà présent pour le restaurant avec leur note modif class 'display : none'
+					let les_li = commentList.querySelectorAll('li');
+					for(let y = 0; les_li.length > y ; y++) {
+						let li = les_li[y];
+						li.classList.add('listElementNone');
+					}
+						deleteMarkerZoom();
+				});
+			}
+		}
+	}	
 	
 	static addNewRestaurant(lat, lng){
 		let list = this.listElement.getElementsByClassName('article'),
@@ -223,7 +234,7 @@ class Restaurants {
 					<p>${address}</p>
 					<img class=""
 						id="img-${idNewRestaurant}"
-						src="https://maps.googleapis.com/maps/api/streetview?location=${lat},${lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
+						src="https://maps.googleapis.com/maps/api/streetview?location=${lat},${lng}&size=256x256&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
 						alt="image street view" />
 					<p>${description}</p>
 					<p>

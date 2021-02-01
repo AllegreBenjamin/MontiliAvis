@@ -1,4 +1,5 @@
 /* CSS Document */
+
 body {
 	padding: 0;
 	margin: 0;
@@ -11,29 +12,8 @@ header {
 .search h4 {
 	color: white;
 }
-
-.img-star {
-	width: 40%;
-}
-
-.H5 {
-	color: blue;
-}
-
-
-.listElementNone, .article-img, .formElementNone{
-	display: none;
-}
-
-.form-avis img{
-	width: 30px;
-	height: 30px;
-	margin: 0 -3px 0 0;
-	background-color: darkgray;
-}
-
-.article li{
-	list-style: none;
+.search form{
+	margin-left: 35%
 }
 
 #map{
@@ -41,7 +21,12 @@ header {
 	height:400px;
 	width: 100%;
 }
-
+.list h3 {
+	color: darkblue;
+}
+.listElementNone, .article-img, .formElementNone{
+	display: none;
+}
 footer {
 	width: 100%;
 	text-align: center;
@@ -49,116 +34,4 @@ footer {
 	position: relative;
 	bottom: 0;
 	background-color: darkblue;
-}
-
-@media screen and (min-width:2561px){
-	.search h4{
-		margin-top: 20px;
-		margin-bottom: 20px;	
-	}
-	.search input {
-		margin-left: 25%;
-	}
-	.search button{
-		margin-left: 10%;
-	}
-	.ban-ville{
-		margin-top: 50px;
-	}
-	.list{
-		height: 1060px;
-		overflow: scroll;
-	}
-}
-@media screen and (max-width:2560px){
-	.search h4{
-		font-size: 24px;
-		margin-top: 20px;
-		margin-bottom: 20px;	
-	}
-	.search input {
-		margin-left: 25%;
-	}
-	.search button{
-		margin-left: 10%;
-	}
-	.ban-ville {
-		margin-top: 50px;
-	}
-	.list{
-		height: 950px;
-		overflow: scroll;
-	}
-	
-}
-// laptop L
-@media screen and (max-width:1440px){
-
-	.search input {
-		width: 50%;
-		margin-left: 23%;
-	}
-	.search button{
-		margin-left: 5%;
-	}
-
-}
-// laptop
-@media screen and (max-width:1024px){
-	.search input{
-		width: 40%;
-		margin-left: 20%;
-	}
-	
-}
-@media screen and (max-width:996px){
-
-	
-}
-// tablette
-@media screen and (max-width:768px) {
-	.search {
-		margin-bottom: 10px;
-	}
-	.search input{
-		margin: 5px 25% 5px 25%;
-		width: 50%;
-	}
-	.search button {
-		margin: 5px 20% 5px 20%;
-		width: 60%;
-	}
-	
-	.main-col-1{
-		display: none;
-	}
-	
-}
-//mobile L
-@media screen and (max-width:425px){
-	.col-header {
-		display: none;
-	}
-	.search {
-		margin-bottom: 10px;
-	}
-	.search input{
-		margin: 5px 25% 5px 25%;
-		width: 50%;
-	}
-	.search button {
-		margin: 5px 20% 5px 20%;
-		width: 60%;
-	}
-}
-
-// mobile M
-@media screen and (max-width:375px){
-
-}
-// mobile S
-@media screen and (max-width:320px){
-	
-
-
 }

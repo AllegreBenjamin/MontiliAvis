@@ -46,23 +46,17 @@
 			<div class="col-lg-12" id="map"></div>
 			<div class="legend col-lg-12">
 				<div class="legend-elem">
-					<span>Ville :</span><img src="img/icons/panneau-ville-montelimar.png" alt="panneau de la ville de montélimar"/>
-					<span>Votre position :</span><img src="img/icons/vous-etes-ici.png" alt="Indique votre position"/>
-					<span>Restaurant Google Places :</span><img src="img/icons/restaurant-place.png" alt="Logo des retaurants trouver dans google place"/>
-					<span>Restaurant Google Places Focus :</span><img src="img/icons/restaurant-place-zoom.png" alt="Logo des retaurants focus trouver dans google place "/>
-					<span>Restaurant Club Montili Avis :</span><img src="img/icons/restaurant-club.png" alt="Logo des retaurants référencer dans montili avis"/>
-					<span>Restaurant Club Montili Avis Focus :</span><img src="img/icons/restaurant-club-zoom.png" alt="Logo des retaurants focus référencer dans montili avis"/>
+					<span>Ville :</span><img class="img-legend" src="img/icons/panneau-ville-montelimar.png" alt="panneau de la ville de montélimar"/>
+					<span>Votre position :</span><img class="img-legend" src="img/icons/vous-etes-ici.png" alt="Indique votre position"/>
+					<span>Restaurant Google Places :</span><img class="img-legend" src="img/icons/restaurant.png" alt="Logo des retaurants trouver dans google place"/>
+					<span>Restaurant Google Places Focus :</span><img class="img-legend-zoom" src="img/icons/restaurant-zoom.png" alt="Logo des retaurants focus trouver dans google place "/>
 				</div>
 			</div>
 		</div>
-		<div class="listAll col-lg-5" id="listAll">
-			<div class="list col-lg-12" id="list">
+		<div class="list col-lg-5" id="list">
 				<h3>Liste restaurant</h3>
-			</div>
-			<div class="listExt col-lg-12" id="listExt">
-
-			</div>
 		</div>
+
 		
 		<div class="main-col-1 col-lg-1"></div>
 	</main>
@@ -78,8 +72,8 @@
 	<script type="text/javascript">
 	
 	
-	let map, infoWindow, latitude, longitude, idRestaurantGooglePlace = 6;
-	let restaurantsExt = [], markerRestaurantAll = [], markerRestaurantZoom = [];
+	let map, infoWindow, latitude, longitude;
+	let restaurants= [], restaurantsPlaces = [], restaurantsPlacesGetDetail = [], markerRestaurantAll = [], markerRestaurantZoom = [];
 	let starMin = 0;
 	let montelimar = {lat: 44.557939, lng: 4.750318};
 	const POS = {};
@@ -142,6 +136,7 @@
 
 						map.setCenter(POS);
 						nearbySearch(POS);
+						
 					}
 				);
 		} else {
@@ -149,159 +144,134 @@
 				handleLocationError(false, infoWindow, map.getCenter());
 		}
 		
-		function nearbySearch(POS){
-			var request = {
-				location: POS,
-				radius: '500',
-				type: ['restaurant']
-			};
+	function nearbySearch(POS){
+		let placesServiceRequest = {
+			location: POS,
+			radius: '250',
+			type: ['restaurant']
+		};
 
-			var service = new google.maps.places.PlacesService(map);
-			service.nearbySearch(request, callbackNearbySearch);
+		let service = new google.maps.places.PlacesService(map);
+		service.nearbySearch(placesServiceRequest, callbackNearbySearch);
 	}
-		
-	function callbackNearbySearch(results, status) {
-			if (status == google.maps.places.PlacesServiceStatus.OK) {
-				for (var i = 0; i < results.length; i++) {
-					idRestaurantGooglePlace = idRestaurantGooglePlace + 1;
-					
-					getRestaurantExtObj(results[i], idRestaurantGooglePlace)
-				}
-			
-				let restaurantsArticles = document.getElementsByClassName('article');
-				console.log(restaurantsArticles);
-				for(var y =0; y < restaurantsExt.length; y++){
-					for(var x = 0;x < restaurantsArticles.length; x++ ){
-						let nameRestaurantVerif = restaurantsArticles[x].querySelector('h5').innerHTML;
-						console.log(restaurantsExt[y].name)
-						if(restaurantsExt[y].name == nameRestaurantVerif){
-							
-							restaurantsExt = restaurantsExt.filter(item => item !== restaurantsExt[y])
-						
-						}else{
-							console.log('NON existe pas')
-						let html ='';	
-							if(Restaurants.starAverage(restaurantsExt[y].ratings) >= starMin){
-								addMarkerPlace(parseFloat(restaurantsExt[y].lat), parseFloat(restaurantsExt[y].lng));
-								html = `<article id="${restaurantsExt[y].idRestaurant}" class="article">
-										<h5 class="H5">${restaurantsExt[y].name}</h5>
-										${Restaurants.starsHTML(Restaurants.starAverage(restaurantsExt[y].ratings))}
-										<p>${restaurantsExt[y].address}</p>
-										<img class="article-img"
-										id="img-${restaurantsExt[y].idRestaurant}"
-										src="https://maps.googleapis.com/maps/api/streetview?location=${restaurantsExt[y].lat},${restaurantsExt[y].lng}&size=456x456&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
-										alt="image street view" />
-									<p>${restaurantsExt[y].description}</p>
-									<p>Lat : <span id="lat-${restaurantsExt[y].idRestaurant}">${restaurantsExt[y].lat}</span>
-									Lng : <span id="lng-${restaurantsExt[y].idRestaurant}">${restaurantsExt[y].lng}</span>
-									</p>
-									<form id="formAvis-${restaurantsExt[y].idRestaurant}" class="formElementNone form-avis">
-										<h6>Donner votre avis</h6>
-										<textarea id="comment-${restaurantsExt[y].idRestaurant}" name="comment" rows="5" cols="33">
+	
+	function getDetailRecursive(array) {
 
-										</textarea><br /> 
+		if (!array[0]) {
+			console.log('fin appel recursif');	
+			return 0
+		}
+		let element = array.shift()
+	
+		let getDetailsRequest = {
+			placeId: element.placeId,
+			fields: ['place_id', 'formatted_phone_number', 'opening_hours', 'website', 'price_level', 'reviews']
+		}
+		let serviceII = new google.maps.places.PlacesService(map);
+		serviceII.getDetails(getDetailsRequest, (place, status) => {
+		
+			if (status === google.maps.places.PlacesServiceStatus.OK) {
+				// TODO: ajouter le resto au DOM
+
+				// Appel récursif
+				window.setTimeout(() => {
 					
-										<input type="hidden" name="note" value="" id="note-${restaurantsExt[y].idRestaurant}"/>
-										<img src="img/stars/star_out.gif" id="star_1" class="star"/>
-										<img src="img/stars/star_out.gif" id="star_2" class="star"/>
-										<img src="img/stars/star_out.gif" id="star_3" class="star"/>
-										<img src="img/stars/star_out.gif" id="star_4" class="star"/>
-										<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
-										<input type="reset" value="Reset"/>
-										<input type="button" id="avis-${restaurantsExt[y].idRestaurant}" value="Envoyer"/>
 				
-									</form>
-									<ul id="ul-${restaurantsExt[y].idRestaurant}">`
-										restaurantsExt[y].ratings.forEach(rating =>
-											html +=
-												`<li class="listElementNone article-${restaurantsExt[y].idRestaurant}">${Restaurants.starsHTML(rating.stars)}-${rating.comment}</li>`
-			
-										);
-										html +=
-										`   </ul>
-										</article>`
-										let listElement = document.getElementById("listExt");	
-										
-										listElement.innerHTML += html
-										restaurantsArticles = document.getElementsByClassName('article');
-										restaurantsExt = restaurantsExt.filter(item => item !== restaurantsExt[y])
-							}
-						}
-					}
-				}
-			}
-	}
-		
-			/*
-
+					getDetailRecursive(array)
 					
-									
-								
-						}	
-					}
-				}
-			}*/
-		
+					let newRestaurant = new Restaurants (
+						element.idRestaurant,
+						element.placeId,
+						element.name,
+						element.address,
+						element.lat,
+						element.lng,
+						element.userRatingsTotal,
+						element.rating,
+						place.formatted_phone_number,
+			            place.reviews,
+						place.opening_hours,
+						place.price_level
+					)
+					const searchBtn = document.querySelector('#search');
+					// Tu récupère le bouton de recherche.
+					const starMin = document.querySelector('#starMin');
+					Restaurants.displayRestaurants(newRestaurant, starMin.value || 0)
 			
-
-
-	function getRestaurantExtObj(results, idRestaurantGooglePlace){
-		let restaurantExtObj = new Restaurants(
-				idRestaurantGooglePlace,
-				results.name,
-				results.vicinity,
-				results.description,
-				results.geometry.location.lat(),
-				results.geometry.location.lng(),
-				ratings = [
-					{
-					'stars' : results.rating,
-					'comment' : 'Moyenne google place du restaurant'
-					},
-				]
-		);
-		restaurantsExt.push(restaurantExtObj)
-		
+					Restaurants.addListenerFormAndComment();
+					// Tu récupère le champs de notation minimum.
+					searchBtn.addEventListener('click', function handler(event) {
+						deleteMarker();
+						Restaurants.clearList();
+					
+						Restaurants.displayRestaurants(newRestaurant, starMin.value || 0)
+						// Ici event listeners
+						Restaurants.addListenerFormAndComment();
+					})
+				}, 300)
+				
+			} else {
+				console.log(status);
+			}
+			
+		})
 	}
+	
+	function callbackNearbySearch(placesServiceRequest, status) {
+		if (status == google.maps.places.PlacesServiceStatus.OK) {
+			for (var i = 0; i < placesServiceRequest.length; i++) {
+				idRestaurantGooglePlace = i;
+				arrayRestaurantsPlaces(placesServiceRequest[i], idRestaurantGooglePlace)
+			}
+		}
+		let array = restaurantsPlaces;
+		
+		getDetailRecursive(array)
+		
+	
+		
+	/*
+			})*/
+	}
+	
+	function arrayRestaurantsPlaces(placesServiceRequest, idRestaurantGooglePlace){
 
-		map.addListener("click", (e) => {
-			placeMarkerNewRestaurant(e.latLng, map);
-			Restaurants.addNewRestaurant(e.latLng.lat(), e.latLng.lng());
-		});
+		let restaurantPlace = {
+			'idRestaurant' : idRestaurantGooglePlace,
+			'placeId' : placesServiceRequest.place_id,
+			'name' : placesServiceRequest.name,
+			'address' : placesServiceRequest.vicinity,
+			'lat': placesServiceRequest.geometry.location.lat(),
+			'lng': placesServiceRequest.geometry.location.lng(),
+			'userRatingsTotal' : placesServiceRequest.user_ratings_total,
+			'rating' : placesServiceRequest.rating
+
+		}
+		restaurantsPlaces.push(restaurantPlace)
+	}
+	
+
+	map.addListener("click", (e) => {
+		placeMarkerNewRestaurant(e.latLng, map);
+		Restaurants.addNewRestaurant(e.latLng.lat(), e.latLng.lng());
+	});
 		
 }
 
-	function addMarkerClub(lat, lng){
+	function addMarker(lat, lng){
 		let marker = new google.maps.Marker({
 			position: {lat, lng},
 			map,
-			icon: 'img/icons/restaurant-club.png'
+			icon: 'img/icons/restaurant.png'
 		});
 		markerRestaurantAll.push(marker);
 	}
-	function addMarkerPlace(lat, lng){
+	
+	function addMarkerZoom(lat, lng){
 		let marker = new google.maps.Marker({
 			position: {lat, lng},
 			map,
-			icon: 'img/icons/restaurant-place.png'
-		});
-		markerRestaurantAll.push(marker);
-	}
-
-	function addMarkerPlaceZoom(lat, lng){
-		let marker = new google.maps.Marker({
-			position: {lat, lng},
-			map,
-			icon: 'img/icons/restaurant-place-zoom.png'
-		});
-		markerRestaurantZoom.push(marker);
-		map.setCenter({lat, lng});
-	}
-	function addMarkerClubZoom(lat, lng){
-		let marker = new google.maps.Marker({
-			position: {lat, lng},
-			map,
-			icon: 'img/icons/restaurant-club-zoom.png'
+			icon: 'img/icons/restaurant-zoom.png'
 		});
 		markerRestaurantZoom.push(marker);
 		map.setCenter({lat, lng});
@@ -340,143 +310,9 @@
   		infoWindow.open(map);
 	}
 
-	function getRestaurantsJSON(callback) {
-	   let request = new XMLHttpRequest();
-
-		request.onreadystatechange = function() {
-			if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-				let restaurantsResponses = JSON.parse(this.responseText);
-				
-				// appel callback car appel terminé
-				callback(restaurantsResponses);
-			}
-		};
-		request.open("GET", "json/restaurants.json");
-		request.send();
-
-	}
-
-
-	function initRestaurants() {
-		
-			getRestaurantsJSON(function(restaurants) {
-
-			/**
-			 * 'getRestaurantsJSON' prends en paramètre un callback auquel
-			 * va être communiquée la réponse sous forme d'objet.
-			 */
-			restaurants.map(restaurant => new Restaurants(
-				restaurant.idRestaurant,
-				restaurant.name,
-				restaurant.address,
-				restaurant.description,
-				restaurant.lat,
-				restaurant.lng,
-				restaurant.ratings,
-				));
-
-			/**
-			 * Tu modifies l'array 'restaurants' grâce à map de sorte à enregistrer
-			 * tes nouvelles instances de 'Restaurants' (qui devrait être au singulier
-			 * d'après moi.)
-			 */
-			
-			const searchBtn = document.querySelector('#search');
-			// Tu récupère le bouton de recherche.
-			const starMin = document.querySelector('#starMin');
-			// Tu récupère le champs de notation minimum.
-			searchBtn.addEventListener('click', function handler(event) {
-			
-				// Tu enregistres ton événement UNE SEULE fois.
-				deleteMarker();
-				Restaurants.clearList();
-				/**
-				 * Tu appels une méthode statique de ta class 'Restaurants' qui va
-				 * nettoyer la recherche précédente.
-				 */
-				Restaurants.displayRestaurants(restaurants, starMin.value || 0);
-				
-				/**
-				 * Tu appels une méthode statique de ta class 'Restaurants' qui va
-				 * afficher les restaurants contenu dans l'array (d'instance de
-				 * 'Restaurants') 'restaurants' ayant une note suppérieur ou égale à
-				 * 'starMin.value || 0' (comprendre 'starMin.value' ou '0' si
-				 * 'starMin.value' n'a pas de valeur.)
-				 */	
-				
-						
-				  
-				
-				const nodeList = document.getElementsByClassName('article');
-				
-			
-
-				for (let x = 0; x < nodeList.length; x++) {
-						
-						 // Affiche restaurant onclick 
-						 nodeList[x].addEventListener('click', () => {
-						// vérifie que le restaurant n'est pas déjà ouvert
-						if (document.querySelector('#formAvis-'+x).classList.contains('formElementNone')) {
-							Restaurants.displayRestaurant(x)
-							}
-						});
-						const addAvisBtn = document.querySelector('#avis-'+x);
-						
-						addAvisBtn.addEventListener('click', function(event){
-							console.log('click');	
-							let comment = document.getElementById('comment-'+x).value;
-							if(typeof comment !== 'string'){
-								errComment1 = "Not a string!";
-								console.log(errComment1); 
-							}else if(comment === null || comment === undefined){
-								errComment2 = "Le commentaire est important penser à en inscrire";
-								console.log(errComment2);
-							}else{
-								let inputNote = document.getElementById('note-'+x).value;
-								let ul = document.getElementById('ul-'+x);
-								let li = document.createElement('li');
-								li.setAttribute('class', 'article-'+x);
-								li.innerHTML = Restaurants.starsHTML(inputNote) + '-'  + comment;
-								ul.appendChild(li);
-								
-							}
-				});
-
-						
-				
-
-					const commentList = document.getElementById('ul-'+x);
-					if(commentList !== null){
-						commentList.addEventListener('mouseleave', function(event){
-							// IMG restaurant récup pour modif de la class 'display : none'
-							let img = document.getElementById('img-'+x);
-							img.classList.add('article-img');
-							// cacher le formulaire pour donner sont avis
-							let form = document.getElementById('formAvis-'+x);
-							form.classList.add('formElementNone');
-							// List des commentaires déjà présent pour le restaurant avec leur note modif class 'display : none'
-							let les_li = commentList.querySelectorAll('li');
-							for(let y = 0; les_li.length > y ; y++) {
-								let li = les_li[y];
-								li.classList.add('listElementNone');
-							}
-								deleteMarkerZoom();
-						});
-					}
-					
-				}
-					
-				return handler;
-			}());
-
-		});
-		
-	}
-
 	window.onload = function(){
 		// Fonction d'initialisation qui s'exécute lorsque le DOM est chargé
 		initMap();
-		initRestaurants();
 	};
 	</script>
 </body>
