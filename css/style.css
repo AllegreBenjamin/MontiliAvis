@@ -7,10 +7,10 @@ body {
 header {
   background-color: darkblue; }
 
-.search h4 {
+#search h4 {
   color: white; }
 
-.search form {
+#search form {
   margin-left: 35%; }
 
 #map {
@@ -18,10 +18,19 @@ header {
   height: 400px;
   width: 100%; }
 
+.article h5 {
+  display: contents; }
+
+.starsImg img {
+  width: 30%; }
+
 .list h3 {
   color: darkblue; }
 
-.listElementNone, .article-img, .formElementNone {
+#avis img {
+  width: 20%; }
+
+.elementNone, .article-img {
   display: none; }
 
 footer {
