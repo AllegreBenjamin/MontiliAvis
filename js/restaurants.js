@@ -13,14 +13,9 @@ class Restaurants {
 	 * @param {number} lng 
 	 * @param {number} userRatingsTotal 
 	 * @param {number} rating 
-	 * @param {sting} formattedPhoneNumber 
-	 * @param {array} reviews 
-	 * @param {array} openingHours 
-	 * @param {array} photos
-	 * @param {string} website
-	 * @param {number} priceLevel 
+	
 	 */
-	constructor(idRestaurant, placeId, name, address, lat, lng, userRatingsTotal, rating, formattedPhoneNumber, reviews, photos, website, openingHours, priceLevel){
+	constructor(idRestaurant, placeId, name, address, lat, lng, userRatingsTotal, rating){
 		this.idRestaurant = idRestaurant;
 		this.placeId = placeId;
 		this.name = name;
@@ -29,12 +24,7 @@ class Restaurants {
 		this.lng = lng;
 		this.userRatingsTotal = userRatingsTotal;
 		this.rating = rating;
-		this.formattedPhoneNumber = formattedPhoneNumber;
-		this.reviews = reviews;
-		this.photos = photos;
-		this.website = website;
-		this.openingHours = openingHours;
-		this.priceLevel = priceLevel;
+
 	}
 
 	/**
@@ -70,8 +60,6 @@ class Restaurants {
 
 	}
 
-
-
 	/**
 	 * @clearList - blank display of any restaurant 
 	 *            - vide l'affichage de tout restaurant.
@@ -96,88 +84,44 @@ class Restaurants {
 	}
 
 	/**
-	 * @displayRestaurants - Display the restaurant in the list
-	 * 					   - Afficher le restaurant dans la list 
-	 * @param {Object} newRestaurant - Object Restaurants
-	 * @param {*} starMin - stars min
-	 * 					  - étoiles Min
+	 * @displayRestaurantsBase - Used to display the basic list of restaurants with simplistic display.
+	 * 						   - Permets d'afficher la liste de bases des restaurants affichage simpliste. 
+	 * @param {Object} restaurantsBases - Table containing Restaurant objects found near the user location
+	 * 									- Tableau contenant les Objets restaurants trouvé à proximité de la localisation utilisateur
+	 * @static
 	 */
-	static displayRestaurants(newRestaurant, starMin){
-		 console.log(newRestaurant)
-		 let html = '';
-			
-			if(newRestaurant.rating >= starMin){
-				addMarker(parseFloat(newRestaurant.lat), parseFloat(newRestaurant.lng));
-				html = `<article id="${newRestaurant.idRestaurant}" class="article">
-					<div class="starsImg col-lg-12">				
-						<h5 class="H5">${newRestaurant.name} - </h5>${Restaurants.starsHTML(newRestaurant.rating)}
-						<input class="moyenne" type="hidden" value="${newRestaurant.rating}">
-					</div>
-					<div class="row">
-						<div class="street-view-img col-lg-6">	
-							<img class="article-img"
-								id="img-${newRestaurant.idRestaurant}"
-								src="https://maps.googleapis.com/maps/api/streetview?location=${newRestaurant.lat},${newRestaurant.lng}&size=256x256&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
-								alt="image street view" />
-						</div>
-						<div class="restaurant-info col-lg-6">
-							<p>${newRestaurant.address}</p>
-							<p>Avis total: ${newRestaurant.userRatingsTotal}</p>
-							<p>Téléphone: ${newRestaurant.formattedPhoneNumber}</p>
-							<p>Site: ${newRestaurant.website}</p>
-							<p>
-								Lat : <span id="lat-${newRestaurant.idRestaurant}">${newRestaurant.lat}</span>
-								Lng : <span id="lng-${newRestaurant.idRestaurant}">${newRestaurant.lng}</span>
-							</p>
-						</div>
-						<div class="restaurant-photos col-lg-12"> `
-							console.log(newRestaurant.photos.length)
-					`	</div>
-					</div>
-					<form id="formAvis-${newRestaurant.idRestaurant}" class="elementNone form-avis">
-						<h6>Donner votre avis</h6>
-						<label for="author-name-${newRestaurant.idRestaurant}">Votre nom :</label>
-						<input type="text" id="author-name-${newRestaurant.idRestaurant}" name="author-name-${newRestaurant.idRestaurant}">
-						${Restaurants.getDateAndDisplay()}
-						<textarea id="comment-${newRestaurant.idRestaurant}" name="comment" rows="5" cols="33">
-
-						</textarea><br /> 
-							
-						<input type="hidden" name="note" value="" id="note-${newRestaurant.idRestaurant}"/>
-  							<img src="img/stars/star_out.gif" id="star_1" class="star"/>
-  							<img src="img/stars/star_out.gif" id="star_2" class="star"/>
-  							<img src="img/stars/star_out.gif" id="star_3" class="star"/>
-  							<img src="img/stars/star_out.gif" id="star_4" class="star"/>
-							<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
-							<input type="reset" value="Reset"/>
-							<input type="button" id="avis-${newRestaurant.idRestaurant}" value="Envoyer"/>
-						
-					</form>
-					<div id="avis" class="elementNone">`
-
-				newRestaurant.reviews.forEach(review => {
-					
-					html +=
-					`
-					<div class="article-${newRestaurant.idRestaurant}">
-						<p>${review.author_name} - ${review.relative_time_description}</p>
-						<p>${Restaurants.starsHTML(review.rating)} - ${review.text}</p>
-					</div>`
-					
-				}); 	 
-			
-				`</div>
-				</article>`
-				this.listElement.innerHTML += html;
-			
-			}else if(newRestaurant.rating < starMin){
-				html = `<article id="${newRestaurant.idRestaurant}" class="article">
-
-						</article`;
-				this.listElement.innerHTML += html;
-			}	
+	static displayRestaurantsBases(restaurantBase){
 		
+		// voir avec MENTOR pour faire autrement
+		
+		let html = '';
+		addMarker(parseFloat(restaurantBase.lat), parseFloat(restaurantBase.lng))
+		html = `<article id="${restaurantBase.idRestaurant}" value="${restaurantBase.idRestaurant}" class="article">
+					<div class="inputInfo">
+						<input class="idRestaurant" type="hidden" value="${restaurantBase.idRestaurant}">
+						<input class="H5input" type="hidden" value="${restaurantBase.name}">
+						<input class="moyenne" type="hidden" value="${restaurantBase.rating}">
+						<input class="placeId" type="hidden" value="${restaurantBase.placeId}">
+						<input class="adresse" type="hidden" value="${restaurantBase.address}">
+						<input class="nbrAvis" type="hidden" value="${restaurantBase.userRatingsTotal}">
+						<input class="lat" type="hidden" value="${parseFloat(restaurantBase.lat)}">
+						<input class="lng" type="hidden" value="${parseFloat(restaurantBase.lng)}">
+					</div>
+					<div class="starsImg col-lg-12">				
+						<h5 class="H5">${restaurantBase.name} - </h5>${Restaurants.starsHTML(restaurantBase.rating)}
+					</div>
+					<div class="restaurant-info col-lg-12">
+						<p class="adresse">${restaurantBase.address}</p>
+						<p class="nbrAvis elementNone">Nombre d'avis: ${restaurantBase.userRatingsTotal}</p>
+					</div>
+				</article>
+				`
+				this.listElement.innerHTML += html;
+		
+		handleSearchForm()
+	
 	}
+
 
 	/**
 	 * @displayRestaurant - Show hidden restaurant information (x)
@@ -226,7 +170,50 @@ class Restaurants {
 		
 		addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
 	}
-	
+
+	static addEventListenerListsRestaurants(){
+
+			let listsRestaurants = this.listElement.getElementsByClassName('article')
+			
+			
+			for(let x = 0; x < listsRestaurants.length; x++) {
+				
+				// Affiche restaurant onclick 
+				listsRestaurants[x].addEventListener('click', () => {
+					console.log(listsRestaurants[x])
+					// get place_id pour recherche detail
+					
+
+					// Récupère les informations du restaurant sans rêquete
+					let divInputInfo = listsRestaurants[x].getElementsByClassName("inputInfo")
+						let idRestaurant = divInputInfo[0].getElementsByClassName("idRestaurant")
+						let h5 = divInputInfo[0].getElementsByClassName("H5input")
+						let inputMoyenne = divInputInfo[0].getElementsByClassName("moyenne")
+						let inputPlaceId = divInputInfo[0].getElementsByClassName("placeId")
+						let pAdresse = divInputInfo[0].getElementsByClassName("adresse")
+						let pNbrAvis = divInputInfo[0].getElementsByClassName("nbrAvis")
+						let lat = divInputInfo[0].getElementsByClassName("lat")
+						let lng = divInputInfo[0].getElementsByClassName("lng")
+					
+				
+					tabInfoBase = [
+						idRestaurant[0].value,
+						h5[0].value,
+						inputMoyenne[0].value,
+						inputPlaceId[0].value,
+						pAdresse[0].value,
+						pNbrAvis[0].value,
+						lat[0].value,
+						lng [0].value,
+					]
+					getDetail(tabInfoBase[3], tabInfoBase);
+					
+				});
+
+
+			}			
+		
+	}
 	/**
 	 * @addListenerFormAndComment - Add a listener for adding a restaurant review for processing
 	 * 							  - Ajouter un listener pour l'ajout d'un avis restaurant pour traitement
@@ -289,68 +276,65 @@ class Restaurants {
 	 		html = '',
 			idNewRestaurant = list.length,
 			date = Restaurants.getDateAndDisplay(),
-			name = prompt("Quel est le nom du restaurant :"),
+			nameRestaurant = prompt("Quel est le nom du restaurant :"),
 			address = prompt("Renseigner l'adresse :"),
 			userRatingsTotal = 1,
 			formattedPhoneNumber = parseInt(prompt("Renseigner le téléphone :")),
+			website = prompt("Site web :"),
+			openingHours = prompt("Heure d'ouverture"),
 			authorName = prompt("Nom de l'auteur :"),
 			stars = parseInt(prompt("Noter le restaurant de 1 à 5 :")),
 			comment = prompt("Ajouter un commentaire :"),
 			ratings = [
 				{
-				'stars' : stars,
-				'comment' : comment
+					'date' : date,
+					'authorName' : authorName,
+					'stars' : stars,
+					'comment' : comment
 				},
 			]
-		html = `<article id="${idNewRestaurant}" class="article">
-				<div class="starsImg col-lg-12>
-					<h5 class="H5">${name} - </h5>  ${Restaurants.starsHTML(Restaurants.starAverage(ratings))}
-					<input class="moyenne" type="hidden" value="${stars}">
-				</div>
-				<div class="row">
-					<div class="street-view-img col-lg-6>
-						<img class="article-img"
-							id="img-${idNewRestaurant}"
-							src="https://maps.googleapis.com/maps/api/streetview?location=${lat},${lng}&size=256x256&key=AIzaSyBrzBRzqgXlseZlfmV4R_gxiL1fgKF84Ws"
-							alt="image street view" />
-					</div>
-					<div class="restaurant-info col-lg-6">
-						<p>${address}</p>
-						<p>Avis total: ${userRatingsTotal}</p>
-						<p>${formattedPhoneNumber}</p>
-						<p>
-							Lat : <span id="lat-${idNewRestaurant}">${lat}</span>
-							Lng : <span id="lng-${idNewRestaurant}">${lng}</span>
-						</p>
-					</div>
-				</div> 
-				<form id="formAvis-${idNewRestaurant}" class="elementNone form-avis">
-						<h6>Donner votre avis</h6>
-						<label for="author-name-${idNewRestaurant}">Votre nom :</label>
-						<input type="text" id="autho-name-${idNewRestaurant}" name="author-name-${idNewRestaurants}">
-						${Restaurants.getDateAndDisplay()}
-						<textarea id="comment-${idNewRestaurant}" name="comment" rows="5" cols="33">
 
-						</textarea><br /> 
-							
-						<input type="hidden" name="note" value="" id="note-${idNewRestaurant}"/>
-  							<img src="img/stars/star_out.gif" id="star_1" class="star"/>
-  							<img src="img/stars/star_out.gif" id="star_2" class="star"/>
-  							<img src="img/stars/star_out.gif" id="star_3" class="star"/>
-  							<img src="img/stars/star_out.gif" id="star_4" class="star"/>
-							<img src="img/stars/star_out.gif" id="star_5" class="star"/><br />
-							<input type="reset" value="Reset"/>
-							<input type="button" id="avis-${idNewRestaurant}" value="Envoyer"/>
-						
-					</form>
-					<div id="avis" class="elementNone">
-						<div class="article-${idNewRestaurant}">
-							<p>${authorName} - ${date}</p>
-							<p>${Restaurants.starsHTML(ratings.stars)} - ${ratings.comment}</p>
-						</div>
+		html = `<article id="${idNewRestaurant}" value="${idNewRestaurant}" class="article">
+					<div class="inputInfo">
+						<input class="idRestaurant" type="hidden" value="${idNewRestaurant}">
+						<input class="H5input" type="hidden" value="${nameRestaurant}">
+						<input class="moyenne" type="hidden" value="${stars}">
+						<input class="placeId" type="hidden" value="">
+						<input class="adresse" type="hidden" value="${address}">
+						<input class="nbrAvis" type="hidden" value="${userRatingsTotal}">
+						<input class="lat" type="hidden" value="${parseFloat(lat)}">
+						<input class="lng" type="hidden" value="${parseFloat(lng)}">
+					</div>
+					<div class="starsImg col-lg-12">				
+						<h5 class="H5">${nameRestaurant} - </h5>${Restaurants.starsHTML(stars)}
+					</div>
+					<div class="restaurant-info col-lg-12">
+						<p class="adresse">${address}</p>
+						<p class="nbrAvis elementNone">Nombre d'avis: ${userRatingsTotal}</p>
 					</div>
 				</article>`
 		this.listElement.innerHTML += html;
+		
+		// préparation de la fiche restaurants
+		let placeId = undefined;
+		let priceLevel = undefined;
+		let ficheRestaurant = new FicheRestaurant (
+			idNewRestaurant,
+			placeId,
+			nameRestaurant,
+			address,
+			userRatingsTotal,
+			stars,
+			lat,
+			lng,
+			formattedPhoneNumber,
+			ratings,
+			website,
+			openingHours,
+			priceLevel
+		)
+
+		FicheRestaurant.openFicheRestaurant(ficheRestaurant)
 	}
 
 /**  A Travailé pour prendre en compte des nouveaux commentaire et réajusté la moyenne star
