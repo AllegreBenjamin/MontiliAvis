@@ -15,22 +15,36 @@ header {
   margin-left: 35%; }
 
 #map {
+  margin-left: 10px;
   margin-top: 50px;
   height: 400px;
   width: 100%; }
 
+.legend {
+  padding: 0 0 0 0; }
+
+.legend-elem span {
+  font-size: 14px; }
+
+.legend-elem img {
+  width: 75px; }
+
 .list h1 {
+  font-size: 18px;
   color: darkblue;
   text-decoration: underline; }
 
+.article {
+  text-align: left;
+  border: 1px solid black;
+  margin-bottom: 5px; }
+
 .article h5, .articleFiche h5 {
+  font-size: 18px;
   display: contents; }
 
-.starsImg img {
-  width: 30%; }
-
-#avis img {
-  width: 20%; }
+.btnClose {
+  margin-top: 20px; }
 
 .elementNone, .article-img {
   display: none; }
@@ -46,8 +60,6 @@ footer {
 #overlay {
   position: fixed;
   display: none;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
   right: 0;
@@ -58,14 +70,65 @@ footer {
 
 #ficheRestaurant {
   position: relative;
-  margin-top: 150px;
+  margin-top: 50px;
   margin-left: 50%;
-  margin-right: 50%;
-  font-size: 20px;
+  margin-right: 54%;
   color: white;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%); }
 
 .articleFiche {
   position: fixed;
-  background-color: rgba(0, 0, 0, 0.7); }
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid white;
+  margin-right: 15px;
+  padding-right: 30px;
+  padding-bottom: 15px; }
+
+.starsImg img {
+  width: 30%; }
+
+.starsImg p {
+  text-align: left;
+  margin-left: 50px; }
+
+.street-view-img {
+  margin: 30px 0 0 0; }
+
+.form-avis {
+  margin: 0 20% 0 20%;
+  font-size: 14px;
+  text-align: left; }
+
+.form-avis h6 {
+  text-align: center; }
+
+.form-avis input, .form-avis textarea, .starsAlign {
+  float: right; }
+
+.form-avis textarea {
+  width: 40%; }
+
+.comment {
+  margin-top: 30px; }
+
+.note, .starsAlign {
+  margin-top: 80px; }
+
+.button {
+  margin-top: 10px;
+  margin-left: 10px; }
+
+.starsAlign img {
+  width: 15%; }
+
+.com-util {
+  margin-top: 10px;
+  text-align: left;
+  font-size: 14px;
+  height: 500px;
+  overflow: auto;
+  border: 1px solid white; }
+
+.com-util img {
+  width: 20%; }

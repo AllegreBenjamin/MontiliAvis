@@ -88,7 +88,6 @@ class Restaurants {
 	 * 						   - Permets d'afficher la liste de bases des restaurants affichage simpliste. 
 	 * @param {Object} restaurantsBases - Table containing Restaurant objects found near the user location
 	 * 									- Tableau contenant les Objets restaurants trouvé à proximité de la localisation utilisateur
-	 * @static
 	 */
 	static displayRestaurantsBases(restaurantBase){
 		
@@ -122,55 +121,15 @@ class Restaurants {
 	
 	}
 
-
 	/**
-	 * @displayRestaurant - Show hidden restaurant information (x)
-	 * 					  - Afficher les informations masquées du restaurant(x)
-	 * @param {number} x  - Numerical reference of the desired restaurant
-	 * 					  - Référence numérique du restaurant voulu
+	 * @function
+	 * @name addEventListenerListsRestaurants - Listening event functions on the restaurant list. If clicked,
+	 * 											retrieved basic restaurant information. Then display the restaurant
+	 * 											file with the details corresponding to the selected restaurant (getDetail).
+	 *										  - Fonctions d'écoute d'événement sur la liste des restaurants. Si clic, 
+	 *											récupéré les informations de base restaurant. Puis affiche la fiche
+	 *											restaurant avec les détails correspondant au restaurant sélectionné (getDetail).
 	 */
-	static displayRestaurant(x){
-		// IMG restaurant récup pour modif de la class 'visible'
-		let img = document.getElementById('img-'+x);
-		img.classList.remove('article-img');
-		// afficher le formulaire pour donner sont avis
-		let form = document.getElementById('formAvis-'+x);
-  		form.classList.remove('elementNone');
-		let les_stars = form.querySelectorAll('img');
-		let note = 0;
-		for(let w = 0; les_stars.length > w; w++) {
-							
-			// SI survol etoile alors ajouter a note et changer l'image star
-			les_stars[w].addEventListener('mouseover', function(event) {
-									
-				if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_out.gif'){
-					les_stars[w].setAttribute("src", "img/stars/star_in.gif");
-					note++;
-					let inputNote = document.getElementById('note-'+x);
-					inputNote.setAttribute("value", note);
-				}
-			});
-			// si click si etoile alors supprimer de note et changer l'image
-			les_stars[w].addEventListener('click', function(event) {
-				if(les_stars[w].src == 'http://127.0.0.1/MontiliAvis/img/stars/star_in.gif'){
-					les_stars[w].setAttribute("src", "img/stars/star_out.gif");
-					note--;
-					let inputNote = document.getElementById('note-'+x);
-					inputNote.setAttribute("value", note);
-				}
-			});
-		}
- 
-		let divAvis = document.getElementById('avis');
-	
-		divAvis.classList.remove('elementNone');
-					
-		latitude = document.getElementById('lat-'+x).innerHTML;
-		longitude = document.getElementById('lng-'+x).innerHTML;
-		
-		addMarkerZoom(parseFloat(latitude), parseFloat(longitude));
-	}
-
 	static addEventListenerListsRestaurants(){
 
 			let listsRestaurants = this.listElement.getElementsByClassName('article')
@@ -214,59 +173,10 @@ class Restaurants {
 			}			
 		
 	}
+
 	/**
-	 * @addListenerFormAndComment - Add a listener for adding a restaurant review for processing
-	 * 							  - Ajouter un listener pour l'ajout d'un avis restaurant pour traitement
-	 */
-	static addListenerFormAndComment() {
-		const nodeList = document.getElementsByClassName('article');
-
-		for (let x = 0; x < nodeList.length; x++) {
-			
-			// Affiche restaurant onclick 
-			nodeList[x].addEventListener('click', () => {
-			// vérifie que le restaurant n'est pas déjà ouvert
-				if (document.querySelector('#formAvis-'+x).classList.contains('elementNone')) {
-					Restaurants.displayRestaurant(x)
-				}
-			});
-			const addAvisBtn = document.querySelector('#avis-'+x);
-				
-			addAvisBtn.addEventListener('click', function(event){
-				
-				let name = document.getElementById('author-name-'+x).value;	
-				let comment = document.getElementById('comment-'+x).value;
-				let inputNote = document.getElementById('note-'+x).value;
-
-				let divAvis = document.getElementById('avis');
-				let div = document.createElement('div');
-					div.setAttribute('class', 'article-'+x);
-				
-					div.innerHTML = `<p>${name} - ${Restaurants.getDateAndDisplay()}</p>
-									 <p>${Restaurants.starsHTML(inputNote)} - ${comment}</p>`
-					divAvis.appendChild(div);
-				
-			});
-
-			let divAvis = document.getElementById('avis');
-			if(divAvis !== null){
-				divAvis.addEventListener('mouseleave', function(event){
-					// IMG restaurant récup pour modif de la class 'display : none'
-					let img = document.getElementById('img-'+x);
-					img.classList.add('article-img');
-					// cacher le formulaire pour donner sont avis
-					let form = document.getElementById('formAvis-'+x);
-					form.classList.add('elementNone');
-					// List des commentaires déjà présent pour le restaurant avec leur note modif class 'display : none'
-					divAvis.classList.add('elementNone');
-					deleteMarkerZoom();
-				});
-			}
-		}
-	}	
-	
-	/**
-	 * @addNewRestaurant - Allows the user to add a restaurant to the list already presented.
+	 * @function
+	 * @name addNewRestaurant - Allows the user to add a restaurant to the list already presented.
 	 * 					 - Permets à l'utilisateur d'ajouter un restaurant a la list déjà présentée. 
 	 * @param {number} lat 
 	 * @param {number} lng 
@@ -283,14 +193,14 @@ class Restaurants {
 			website = prompt("Site web :"),
 			openingHours = prompt("Heure d'ouverture"),
 			authorName = prompt("Nom de l'auteur :"),
-			stars = parseInt(prompt("Noter le restaurant de 1 à 5 :")),
+			rating = parseInt(prompt("Noter le restaurant de 1 à 5 :")),
 			comment = prompt("Ajouter un commentaire :"),
-			ratings = [
+			reviews = [
 				{
-					'date' : date,
-					'authorName' : authorName,
-					'stars' : stars,
-					'comment' : comment
+					'relative_time_description' : date,
+					'author_name' : authorName,
+					'rating' : rating,
+					'text' : comment
 				},
 			]
 
@@ -298,7 +208,7 @@ class Restaurants {
 					<div class="inputInfo">
 						<input class="idRestaurant" type="hidden" value="${idNewRestaurant}">
 						<input class="H5input" type="hidden" value="${nameRestaurant}">
-						<input class="moyenne" type="hidden" value="${stars}">
+						<input class="moyenne" type="hidden" value="${rating}">
 						<input class="placeId" type="hidden" value="">
 						<input class="adresse" type="hidden" value="${address}">
 						<input class="nbrAvis" type="hidden" value="${userRatingsTotal}">
@@ -306,7 +216,7 @@ class Restaurants {
 						<input class="lng" type="hidden" value="${parseFloat(lng)}">
 					</div>
 					<div class="starsImg col-lg-12">				
-						<h5 class="H5">${nameRestaurant} - </h5>${Restaurants.starsHTML(stars)}
+						<h5 class="H5">${nameRestaurant} - </h5>${Restaurants.starsHTML(rating)}
 					</div>
 					<div class="restaurant-info col-lg-12">
 						<p class="adresse">${address}</p>
@@ -314,29 +224,28 @@ class Restaurants {
 					</div>
 				</article>`
 		this.listElement.innerHTML += html;
-		
+		this.addEventListenerListsRestaurants()
 		// préparation de la fiche restaurants
 		let placeId = undefined;
-		let priceLevel = undefined;
 		let ficheRestaurant = new FicheRestaurant (
 			idNewRestaurant,
 			placeId,
 			nameRestaurant,
 			address,
 			userRatingsTotal,
-			stars,
+			rating,
 			lat,
 			lng,
 			formattedPhoneNumber,
-			ratings,
+			reviews,
 			website,
-			openingHours,
-			priceLevel
+			openingHours
 		)
-
-		FicheRestaurant.openFicheRestaurant(ficheRestaurant)
+		console.log(ficheRestaurant)
+		ficheRestaurant.openFicheRestaurant()
 	}
 
+	
 /**  A Travailé pour prendre en compte des nouveaux commentaire et réajusté la moyenne star
 	static starAverage(ratings){
 		/*
@@ -345,4 +254,5 @@ class Restaurants {
         return ratings.reduce((a, c) => a += c.stars, 0) / ratings.length;
 	}
 **/	
-}  
+} 
+

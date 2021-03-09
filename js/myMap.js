@@ -4,19 +4,14 @@
  * @var latitude {string} - Latitude used in nearbySearch (POS) - Latitude utilisée dans nearbySearch(POS)
  * @var longitude {string} - Longitude used in nearbySearch (POS) - Longitude utilisée dans nearbySearch(POS)
  */
-let map, infoWindow, latitude, longitude, ficheRestaurant;
+let map, infoWindow, latitude, longitude;
 /**
- * @var restaurants {array} -
- * @var restaurantsPlaces {array} -
- * @var restaurantsPlacesGetDetail {array} -
+ * @var tabInfoBase {array} -
  * @var markerRestaurantAll {array} -
  * @var markerRestaurantZoom {array} -
  */
-let tabInfoBase=[], tabInfoDetail=[], restaurants= [], restaurantsPlaces = [], restaurantsPlacesGetDetail = [], markerRestaurantAll = [], markerRestaurantZoom = [];
-/**
- * @var starMin {number} - Contains the default numeric value 0 - Contiens la valeur numérique par défaut 0 
- */
-let starMin = 0;
+let tabInfoBase=[], markerRestaurantAll = [], markerRestaurantZoom = [];
+
 /**
  * @var montelimar {Object} - 
  */
@@ -31,8 +26,7 @@ const POS = {};
     	/**
     	 * @function 
     	 * @name initMap - Allows you to initialize the Google map and the corresponding functions
-     	*               - Permet d'initialiser la Google map et les fonctions correspondantes*
-     	* @static
+     	*               - Permet d'initialiser la Google map et les fonctions correspondantes
      	*/
 	function initMap() {
 		// Créer l'objet "map" et l'insèrer dans l'élément HTML qui a l'ID "map"
@@ -99,7 +93,13 @@ const POS = {};
 				// Browser doesn't support Geolocation
 				handleLocationError(false, infoWindow, map.getCenter());
 		}
-		
+		/**
+		 * @function
+		 * @name nearbySearch - Allows to retrieve in a radius of 250 around the user position the restaurant thanks to google.maps.places.PlacesService 
+		 * 					  - Permet de récupérer dans un radius de 250 autour de la position utilisateur les restaurant grâce a google.maps.places.PlacesService
+		 * @param {*} POS - Contains the user's current position.
+		 * 				  - Contiens la position actuelle de l'utilisateur.
+		 */
 		function nearbySearch(POS){
 			let placesServiceRequest = {
 				location: POS,
@@ -111,6 +111,19 @@ const POS = {};
 			service.nearbySearch(placesServiceRequest, callbackNearbySearch);
 		}
 		
+		/**
+		 * @function
+		 * @name callbackNearbySearch - callback allow to Create the Restaurants object,
+		 *  then pass it to the displayRestaurantsBases (restaurantBase) function. Addition
+		 *  of event listener on each restaurant with the function addEventListenerListsRestaurants (i)
+		 * 							  - callback permettent de Créer l'objet Restaurants,
+		 *  puis le passe a la fonction displayRestaurantsBases(restaurantBase). Ajout des
+		 *  event listener sur chaque restaurant avec la fonction addEventListenerListsRestaurants(i)
+		 * @param {*} placesServiceRequest - Return from nearbySearch contains the basic information of each restaurant found by the API
+		 * 								   - Retour de nearbySearch contient les informations de base de chaque restaurant trouver par l'api
+		 * @param {*} status - status request
+		 * 					 - status requête
+		 */
 		function callbackNearbySearch(placesServiceRequest, status) {
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
 				for (var i = 0; i < placesServiceRequest.length; i++) {
@@ -139,6 +152,11 @@ const POS = {};
 		});
 			
 	}
+	/**
+	 * @function
+	 * @name handleSearchForm - Function that filters restaurants according to their star average
+	 * 						  - Fonction qui permet de filtre les restaurants en fonction de leur moyenne d'étoile
+	 */
 	function handleSearchForm() {
 
 		const searchBtn = document.querySelector('.search');
@@ -174,10 +192,13 @@ const POS = {};
 	}
 
 	/**
-	 * @getDetail - 
-	 * 			  -
-	 * @param {*} placeID 
-	 * @param {*} tabInfoBase 
+	 * @function
+	 * @name getDetail - function allow you to retrieve and create the restaurant file. Once done we called the opening of the restaurant file.
+	 * 			  	   - fonction permettent de récupérer et créer la fiche restaurant. Une fois fait on appelé l'ouverture de la fiche restaurant.
+	 * @param {*} placeID - Contains the place_id to do the detail search with the google api
+	 * 					  - Contiens le place_id pour faire la recherche de détail avec l'api google
+	 * @param {*} tabInfoBase - Table containing basic restaurant information
+	 * 						  - Table containing basic restaurant information
 	 */
 	function getDetail(placeID, tabInfoBase){
 		
@@ -204,7 +225,7 @@ const POS = {};
 						place.price_level
 						)
 				
-					FicheRestaurant.openFicheRestaurant(ficheRestaurant)
+					ficheRestaurant.openFicheRestaurant(ficheRestaurant)
 				}
 			})
 	}
